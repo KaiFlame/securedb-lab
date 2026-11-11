@@ -1,0 +1,15 @@
+{
+  "id": "test_mongo_network",
+  "controls": [
+    "NOSQL-05"
+  ],
+  "objective": "test_mongo_network",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:00.229238+00:00",
+  "observed": {
+    "bindIp": "127.0.0.1",
+    "note": "Loopback in native profile; Compose requires separate ENV-01 runtime inspection."
+  },
+  "duration_seconds": 0.0444,
+  "artifact": "evidencias/nosql/test_mongo_network.json"
+}

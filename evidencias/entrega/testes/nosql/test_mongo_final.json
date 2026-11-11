@@ -1,0 +1,25 @@
+{
+  "id": "test_mongo_final",
+  "controls": [
+    "NOSQL-10"
+  ],
+  "objective": "test_mongo_final",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:04.250697+00:00",
+  "observed": {
+    "checklist": {
+      "test_mongo_admin_separation": "PASS",
+      "test_mongo_anonymous": "PASS",
+      "test_mongo_backup": "PASS",
+      "test_mongo_environment": "PASS",
+      "test_mongo_injection": "PASS",
+      "test_mongo_network": "PASS",
+      "test_mongo_rbac": "PASS",
+      "test_mongo_schema": "PASS",
+      "test_mongo_tls": "PASS"
+    },
+    "audit_limit": "Community server logs and API logs; no Enterprise audit"
+  },
+  "duration_seconds": 0.0001,
+  "artifact": "evidencias/nosql/test_mongo_final.json"
+}

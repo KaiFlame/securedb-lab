@@ -1,0 +1,12 @@
+{
+  "id": "test_environment_export_and_profile_scope",
+  "controls": [],
+  "objective": "test_environment_export_and_profile_scope",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.646918+00:00",
+  "observed": {
+    "environment_receipt": "included in Docker export; excluded from native result"
+  },
+  "duration_seconds": 0.0034,
+  "artifact": "evidencias/app/test_environment_export_and_profile_scope.json"
+}

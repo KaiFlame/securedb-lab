@@ -1,0 +1,54 @@
+name: Fresh Docker installation (amd64 and arm64)
+on: [push, pull_request, workflow_dispatch]
+permissions: {contents: read}
+jobs:
+  laboratory:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
+    env:
+      LAB_NO_BROWSER: '1'
+      WEB_PORT: '18080'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cold checkout must contain no local installation
+        run: |
+          test ! -e .env
+          test ! -d .local
+          test ! -d .venv
+          test ! -d web/node_modules
+          for file in scripts/docker.sh iniciar.command parar.command testar.command; do sh -n "$file"; done
+      - name: Prepare and start (no host Python or Node)
+        run: sh scripts/docker.sh up
+      - name: Published loopback endpoint
+        run: curl --fail --retry 5 --retry-delay 2 http://localhost:18080/api/health
+      - name: Build native administrative tools
+        run: docker compose --profile tools build ops
+      - name: Record data before restart
+        run: docker compose --profile tools run --rm --no-deps -T --user "$(id -u):$(id -g)" ops python scripts/check_persistence.py --save
+      - name: Stop and reopen without losing data or accounts
+        run: |
+          sh scripts/docker.sh down
+          sh scripts/docker.sh up
+          docker compose --profile tools run --rm --no-deps -T --user "$(id -u):$(id -g)" ops python scripts/check_persistence.py
+      - name: Real HTTP, databases, TLS, authorization and backup/restore tests
+        run: sh scripts/docker.sh test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.runner }}
+          path: |
+            evidencias/latest.json
+            evidencias/environment.json
+            evidencias/persistence.json
+            evidencias/app/test_*.json
+            evidencias/sql/test_*.json
+            evidencias/nosql/test_*.json
+          if-no-files-found: warn
+      - name: Stop preserving volumes
+        if: always()
+        run: |
+          if test -f .env; then sh scripts/docker.sh down; fi

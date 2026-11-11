@@ -1,0 +1,19 @@
+{
+  "id": "test_profile_search",
+  "controls": [
+    "NOSQL-08"
+  ],
+  "objective": "Pesquisa literal de nome/e-mail/segmento e rejeição de operador/tenant.",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.637294+00:00",
+  "observed": {
+    "valid_search": 200,
+    "cross_tenant_results": 0,
+    "regex": "literal",
+    "operator_query": 422,
+    "invalid_segment": 422,
+    "tenant_override": 422
+  },
+  "duration_seconds": 0.5171,
+  "artifact": "evidencias/nosql/test_profile_search.json"
+}

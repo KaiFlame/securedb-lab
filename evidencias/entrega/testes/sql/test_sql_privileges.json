@@ -1,0 +1,19 @@
+{
+  "id": "test_sql_privileges",
+  "controls": [
+    "SQL-03"
+  ],
+  "objective": "test_sql_privileges",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:04.587468+00:00",
+  "observed": {
+    "legitimate_select": "accepted",
+    "ddl": "denied",
+    "account_table": "denied",
+    "truncate": "denied",
+    "set_owner_role": "denied",
+    "auth_business_read": "denied"
+  },
+  "duration_seconds": 0.2396,
+  "artifact": "evidencias/sql/test_sql_privileges.json"
+}

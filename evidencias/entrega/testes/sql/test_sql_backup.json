@@ -1,0 +1,47 @@
+{
+  "id": "test_sql_backup",
+  "controls": [
+    "SQL-09"
+  ],
+  "objective": "test_sql_backup",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:07.671356+00:00",
+  "observed": {
+    "destination": "restore_pg_8ddece9d8dcd4df39958855c37486bc2",
+    "backup_seconds": 0.2369,
+    "restore_seconds": 0.4836,
+    "source": {
+      "lab.tenants": {
+        "count": 2,
+        "sha256": "25cec9cd59e6d68ffd255e0a0f6251fa8087c84966d6407d35d75a2a8e70e058"
+      },
+      "lab.customers": {
+        "count": 3,
+        "sha256": "3c82b091d36f7443a9c46890a3fc223c4a844d6cdd1b7bb6d3d4f82c2e692fd3"
+      },
+      "lab.orders": {
+        "count": 12,
+        "sha256": "587068a2ed736f33811053dc61dc1124586014b673fc60a8c4980f573c6c73fb"
+      }
+    },
+    "restored": {
+      "lab.tenants": {
+        "count": 2,
+        "sha256": "25cec9cd59e6d68ffd255e0a0f6251fa8087c84966d6407d35d75a2a8e70e058"
+      },
+      "lab.customers": {
+        "count": 3,
+        "sha256": "3c82b091d36f7443a9c46890a3fc223c4a844d6cdd1b7bb6d3d4f82c2e692fd3"
+      },
+      "lab.orders": {
+        "count": 12,
+        "sha256": "587068a2ed736f33811053dc61dc1124586014b673fc60a8c4980f573c6c73fb"
+      }
+    },
+    "artifact_name": "restore_pg_8ddece9d8dcd4df39958855c37486bc2.aesgcm",
+    "encrypted": "AES-256-GCM",
+    "consistent_snapshot": true
+  },
+  "duration_seconds": 0.7263,
+  "artifact": "evidencias/sql/test_sql_backup.json"
+}

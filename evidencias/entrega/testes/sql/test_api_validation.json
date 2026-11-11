@@ -1,0 +1,19 @@
+{
+  "id": "test_api_validation",
+  "controls": [
+    "SQL-07",
+    "NOSQL-08"
+  ],
+  "objective": "test_api_validation",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:18:59.177972+00:00",
+  "observed": {
+    "extra_tenant": 422,
+    "operator_query": 422,
+    "operator_string": 422,
+    "object_price": 422,
+    "oversized_limit": 422
+  },
+  "duration_seconds": 0.4327,
+  "artifact": "evidencias/sql/test_api_validation.json"
+}

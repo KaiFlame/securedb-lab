@@ -1,0 +1,136 @@
+name: securedb-lab
+services:
+  audit-init:
+    image: python:3.12.12-slim-bookworm
+    network_mode: none
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    volumes: ["auditdata:/audit"]
+    command: ["python", "-c", "import os; os.makedirs('/audit',exist_ok=True); open('/audit/events.jsonl','a').close(); os.chown('/audit',10001,10001); os.chown('/audit/events.jsonl',10001,10001); os.chmod('/audit',0o700); os.chmod('/audit/events.jsonl',0o600)"]
+  postgres:
+    image: postgres:17.6-bookworm
+    entrypoint: ["/bin/sh", "/lab-scripts/pg-entrypoint.sh"]
+    environment:
+      POSTGRES_DB: securedb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run setup first}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Run setup first}
+      POSTGRES_AUTH_PASSWORD: ${POSTGRES_AUTH_PASSWORD:?Run setup first}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql:/lab-sql:ro
+      - ./scripts:/lab-scripts:ro
+      - ./scripts/pg-init.sh:/docker-entrypoint-initdb.d/10-lab.sh:ro
+      - ./config:/etc/securedb:ro
+      - ./.local/certs/postgres:/lab-certs:ro
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d securedb"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    security_opt: [no-new-privileges:true]
+  mongo:
+    image: mongo:8.0.15
+    entrypoint: ["/bin/bash", "/lab-scripts/mongo-entrypoint.sh"]
+    environment:
+      MONGO_ADMIN_PASSWORD: ${MONGO_ADMIN_PASSWORD:?Run setup first}
+      MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD:?Run setup first}
+    volumes:
+      - mongodata:/data/db
+      - ./scripts:/lab-scripts:ro
+      - ./nosql:/lab-nosql:ro
+      - ./config/mongod.conf:/etc/securedb/mongod.conf:ro
+      - ./.local/certs/mongo:/lab-certs:ro
+    networks: [data]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--host", "mongo", "--tls", "--tlsCAFile", "/tmp/mongo-tls/ca.crt", "--eval", "quit(db.adminCommand({ping:1}).ok===1?0:1)"]
+      interval: 5s
+      timeout: 4s
+      retries: 30
+    security_opt: [no-new-privileges:true]
+  seed:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    build: {context: ., dockerfile: api/Dockerfile, target: seed}
+    environment: {LAB_ADMIN: /run/admin/admin.json}
+    volumes:
+      - ./.local/admin:/run/admin:ro
+      - ./.local/certs/client:/run/ca:ro
+    networks: [data]
+    depends_on:
+      postgres: {condition: service_healthy}
+      mongo: {condition: service_healthy}
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  api:
+    build: {context: ., dockerfile: api/Dockerfile, target: api}
+    environment:
+      LAB_RUNTIME: /run/lab/runtime.json
+      LAB_EVIDENCE: /evidencias
+      LAB_AUDIT: /audit/events.jsonl
+    volumes:
+      - ./.local/runtime:/run/lab:ro
+      - ./.local/certs/client:/run/ca:ro
+      - auditdata:/audit
+      - ./evidencias:/evidencias:ro
+    networks: [edge, data]
+    depends_on:
+      audit-init: {condition: service_completed_successfully}
+      seed: {condition: service_completed_successfully}
+      postgres: {condition: service_healthy}
+      mongo: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/api/health',timeout=8)"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  web:
+    build: {context: ./web}
+    ports: ["127.0.0.1:${WEB_PORT:-8080}:8080"]
+    volumes: ["./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro"]
+    networks: [edge]
+    depends_on:
+      api: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  ops:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    profiles: [tools]
+    build: {context: ., dockerfile: scripts/Dockerfile.ops}
+    environment:
+      LAB_ORIGIN: http://localhost:${WEB_PORT:-8080}
+      LAB_TEST_ENV: Docker Compose / bancos reais / TLS verificado
+    volumes:
+      - ./.local/runtime:/run/lab:ro
+      - ./.local/admin:/run/admin:ro
+      - ./.local/certs/client:/run/ca:ro
+      - ./.local/backups:/backups
+      - ./.local/ops-audit:/ops-audit
+      - ./.local/checks:/checks
+      - ./evidencias:/app/evidencias
+      - ./docs:/app/docs
+    networks: [data, edge]
+    depends_on:
+      api: {condition: service_healthy}
+      web: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+networks:
+  data:
+    internal: true
+    ipam: {config: [{subnet: 172.29.74.0/24}]}
+  edge: {}
+volumes:
+  auditdata:
+  pgdata:
+  mongodata:

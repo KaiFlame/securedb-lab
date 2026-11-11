@@ -1,0 +1,518 @@
+[
+  {
+    "id": "SQL-01",
+    "lab": "SQL",
+    "step": 1,
+    "title": "Ambiente isolado",
+    "category": "Infraestrutura",
+    "criticality": "Alta",
+    "risk": "Exposição e perda de dados",
+    "files": [
+      "docker-compose.yml"
+    ],
+    "required_tests": [
+      "test_sql_environment",
+      "ENV-01"
+    ],
+    "residual": "Host Docker e volume continuam no mesmo domínio de falha.",
+    "implemented": true,
+    "positive": "Servidor 17.x responde e tabelas persistem; contêiner ativo e rede interna observados por ENV-01.",
+    "negative": "ENV-01 recusa banco com porta publicada, contêiner parado ou rede de dados não interna.",
+    "objective": "Executar PostgreSQL persistente em rede restrita.",
+    "configuration": {
+      "path": "docker-compose.yml",
+      "start_line": 1,
+      "excerpt": "name: securedb-lab\nservices:\n  audit-init:\n    image: python:3.12.12-slim-bookworm\n    network_mode: none\n    read_only: true\n    security_opt: [no-new-privileges:true]\n    volumes: [\"auditdata:/audit\"]\n    command: [\"python\", \"-c\", \"import os; os.makedirs('/audit',exist_ok=True); open('/audit/events.jsonl','a').close(); os.chown('/audit',10001,10001); os.chown('/audit/events.jsonl',10001,10001); os.chmod('/audit',0o700); os.chmod('/audit/events.jsonl',0o600)\"]\n  postgres:\n    image: postgres:17.6-bookworm\n    entrypoint: [\"/bin/sh\", \"/lab-scripts/pg-entrypoint.sh\"]\n    environment:\n      POSTGRES_DB: securedb\n      POSTGRES_USER: postgres\n      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run setup first}\n      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Run setup first}\n      POSTGRES_AUTH_PASSWORD: ${POSTGRES_AUTH_PASSWORD:?Run setup first}\n      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n      - ./sql:/lab-sql:ro\n      - ./scripts:/lab-scripts:ro\n      - ./scripts/pg-init.sh:/docker-entrypoint-initdb.d/10-lab.sh:ro"
+    }
+  },
+  {
+    "id": "SQL-02",
+    "lab": "SQL",
+    "step": 2,
+    "title": "Roles segregadas",
+    "category": "Identidade",
+    "criticality": "Crítica",
+    "risk": "Comprometimento com poder de DBA",
+    "files": [
+      "sql/roles_grants.sql"
+    ],
+    "required_tests": [
+      "test_sql_roles"
+    ],
+    "residual": "Administrador e operador de migrations mantêm poder elevado.",
+    "implemented": true,
+    "positive": "api_user herda app_read/app_write e não possui atributos administrativos.",
+    "negative": "Membership de migration_owner ausente; SET ROLE migration_owner negado em SQL-03.",
+    "objective": "Segregar propriedade, leitura, escrita e autenticação.",
+    "configuration": {
+      "path": "sql/roles_grants.sql",
+      "start_line": 1,
+      "excerpt": "-- Run only through the bootstrap administrator; secrets come from the environment.\nSET log_statement = 'none';\n\\getenv app_password POSTGRES_APP_PASSWORD\n\\getenv auth_password POSTGRES_AUTH_PASSWORD\nSELECT 'CREATE ROLE migration_owner NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS'\n WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname='migration_owner') \\gexec\nSELECT 'CREATE ROLE app_read NOLOGIN' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname='app_read') \\gexec\nSELECT 'CREATE ROLE app_write NOLOGIN' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname='app_write') \\gexec\nSELECT format('CREATE ROLE api_user LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD %L', :'app_password')\n WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname='api_user') \\gexec\nSELECT format('CREATE ROLE auth_user LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD %L', :'auth_password')\n WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname='auth_user') \\gexec\nGRANT app_read, app_write TO api_user;\nREVOKE ALL ON DATABASE securedb FROM PUBLIC;\nGRANT CONNECT ON DATABASE securedb TO api_user,auth_user;\nREVOKE ALL ON SCHEMA public FROM PUBLIC;\nCREATE SCHEMA IF NOT EXISTS lab AUTHORIZATION migration_owner;\nCREATE SCHEMA IF NOT EXISTS auth AUTHORIZATION migration_owner;\nCREATE SCHEMA IF NOT EXISTS audit AUTHORIZATION migration_owner;\nGRANT USAGE ON SCHEMA lab TO app_read,app_write;\nGRANT USAGE ON SCHEMA auth TO auth_user;\nGRANT USAGE ON SCHEMA audit TO app_read;\nALTER DEFAULT PRIVILEGES FOR ROLE migration_owner REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;\nRESET log_statement;"
+    }
+  },
+  {
+    "id": "SQL-03",
+    "lab": "SQL",
+    "step": 3,
+    "title": "Menor privilégio",
+    "category": "Autorização",
+    "criticality": "Crítica",
+    "risk": "DDL e leitura de credenciais pela API",
+    "files": [
+      "sql/schema.sql"
+    ],
+    "required_tests": [
+      "test_sql_privileges",
+      "test_api_viewer_and_csrf"
+    ],
+    "residual": "A conta de negócio acessa ambos os tenants sob contexto confiável.",
+    "implemented": true,
+    "positive": "SELECT autorizado e criação/atualização de pedido próprio funcionam.",
+    "negative": "DDL, TRUNCATE, leitura de auth.accounts e escrita por perfil leitor são negados.",
+    "objective": "Permitir apenas operações de negócio e sessão necessárias.",
+    "configuration": {
+      "path": "sql/schema.sql",
+      "start_line": 1,
+      "excerpt": "SET ROLE migration_owner;\nCREATE TABLE IF NOT EXISTS lab.tenants (\n id uuid PRIMARY KEY, name text NOT NULL CHECK(length(name) BETWEEN 3 AND 100)\n);\nCREATE TABLE IF NOT EXISTS lab.customers (\n id uuid NOT NULL, tenant_id uuid NOT NULL REFERENCES lab.tenants(id),\n name text NOT NULL CHECK(length(name) BETWEEN 3 AND 100), email text NOT NULL,\n PRIMARY KEY(tenant_id,id), UNIQUE(tenant_id,email)\n);\nCREATE TABLE IF NOT EXISTS lab.orders (\n id uuid PRIMARY KEY, tenant_id uuid NOT NULL REFERENCES lab.tenants(id), customer_id uuid NOT NULL,\n description text NOT NULL CHECK(length(description) BETWEEN 3 AND 200),\n total numeric(10,2) NOT NULL CHECK(total>0 AND total<=1000000),\n status text NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','approved','shipped','cancelled')),\n created_at timestamptz NOT NULL DEFAULT now(),\n FOREIGN KEY(tenant_id,customer_id) REFERENCES lab.customers(tenant_id,id)\n);\nCREATE INDEX IF NOT EXISTS orders_tenant_idx ON lab.orders(tenant_id,created_at);\nCREATE TABLE IF NOT EXISTS auth.accounts (\n id uuid PRIMARY KEY, username text UNIQUE NOT NULL, password_hash text NOT NULL,\n tenant_id uuid NOT NULL REFERENCES lab.tenants(id), tenant_name text NOT NULL,\n role text NOT NULL CHECK(role IN ('editor','viewer','admin')), display_name text NOT NULL,\n active boolean NOT NULL DEFAULT true\n);"
+    }
+  },
+  {
+    "id": "SQL-04",
+    "lab": "SQL",
+    "step": 4,
+    "title": "SCRAM e origem",
+    "category": "Identidade",
+    "criticality": "Alta",
+    "risk": "Acesso indevido ao banco",
+    "files": [
+      "config/pg_hba.conf"
+    ],
+    "required_tests": [
+      "test_sql_authentication"
+    ],
+    "residual": "SCRAM não substitui proteção do segredo e do host.",
+    "implemented": true,
+    "positive": "Senha correta funciona e verificador armazenado é SCRAM-SHA-256.",
+    "negative": "Senha incorreta é recusada; origem 127.0.0.2 recebe SQLSTATE 28000 no perfil nativo.",
+    "objective": "Autenticar com SCRAM e aceitar somente origens previstas no pg_hba.",
+    "configuration": {
+      "path": "config/pg_hba.conf",
+      "start_line": 1,
+      "excerpt": "# Local sockets exist for initialization and administration inside this container.\nlocal all postgres trust\nlocal all all reject\nhostnossl all all 0.0.0.0/0 reject\nhostnossl all all ::/0 reject\nhostssl securedb api_user 172.29.74.0/24 scram-sha-256\nhostssl securedb auth_user 172.29.74.0/24 scram-sha-256\nhostssl all postgres 172.29.74.0/24 scram-sha-256\nhostssl all all 0.0.0.0/0 reject\nhostssl all all ::/0 reject"
+    }
+  },
+  {
+    "id": "SQL-05",
+    "lab": "SQL",
+    "step": 5,
+    "title": "TLS verify-full",
+    "category": "Criptografia",
+    "criticality": "Alta",
+    "risk": "Interceptação do canal",
+    "files": [
+      "config/postgresql.conf"
+    ],
+    "required_tests": [
+      "test_sql_tls"
+    ],
+    "residual": "CA didática local; não certifica identidade pública.",
+    "implemented": true,
+    "positive": "pg_stat_ssl confirma TLS 1.2/1.3 com cliente verify-full.",
+    "negative": "Conexão sem TLS ou com hostname divergente é recusada.",
+    "objective": "Verificar identidade do servidor e cifrar o canal PostgreSQL.",
+    "configuration": {
+      "path": "config/postgresql.conf",
+      "start_line": 1,
+      "excerpt": "listen_addresses = '*'\npassword_encryption = 'scram-sha-256'\nssl = on\nssl_cert_file = '/tmp/pg-tls/server.crt'\nssl_key_file = '/tmp/pg-tls/server.key'\nssl_min_protocol_version = 'TLSv1.2'\nhba_file = '/etc/securedb/pg_hba.conf'\nlog_connections = on\nlog_disconnections = on\nlog_statement = 'ddl'\nlog_min_error_statement = 'panic'\nlog_parameter_max_length = 0\nlog_parameter_max_length_on_error = 0\nlog_line_prefix = '%m [%p] user=%u db=%d app=%a '\nlogging_collector = on\nlog_directory = 'log'\nlog_filename = 'postgresql-%Y-%m-%d.log'\nshared_preload_libraries = ''"
+    }
+  },
+  {
+    "id": "SQL-06",
+    "lab": "SQL",
+    "step": 6,
+    "title": "Isolamento por RLS",
+    "category": "Autorização",
+    "criticality": "Crítica",
+    "risk": "Leitura e escrita entre empresas",
+    "files": [
+      "sql/rls.sql"
+    ],
+    "required_tests": [
+      "test_sql_rls_direct",
+      "test_api_tenant_access",
+      "test_api_write_scope",
+      "test_sql_context_reset"
+    ],
+    "residual": "GUC de tenant é confiada ao backend; injeção arbitrária ou API comprometida pode alterá-la.",
+    "implemented": true,
+    "positive": "Empresa B opera em suas linhas; A cria e atualiza pedido próprio; SET LOCAL é limpo no commit.",
+    "negative": "A não lê/atualiza linhas B, não insere com tenant B e não escolhe tenant no payload.",
+    "objective": "Aplicar fronteira de empresa no SGBD e na API.",
+    "configuration": {
+      "path": "sql/rls.sql",
+      "start_line": 14,
+      "excerpt": "ALTER TABLE lab.orders ENABLE ROW LEVEL SECURITY;\nALTER TABLE lab.orders FORCE ROW LEVEL SECURITY;\nDROP POLICY IF EXISTS tenant_boundary ON lab.orders;\nCREATE POLICY tenant_boundary ON lab.orders TO app_read,app_write\n USING (tenant_id = nullif(current_setting('app.tenant_id',true),'')::uuid)\n WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id',true),'')::uuid);\nALTER TABLE audit.events ENABLE ROW LEVEL SECURITY;\n-- The SECURITY DEFINER trigger owner must append events. API cannot append/delete them.\nDROP POLICY IF EXISTS tenant_audit ON audit.events;\nCREATE POLICY tenant_audit ON audit.events FOR SELECT TO app_read\n USING (tenant_id = nullif(current_setting('app.tenant_id',true),'')::uuid);\nRESET ROLE;"
+    }
+  },
+  {
+    "id": "SQL-07",
+    "lab": "SQL",
+    "step": 7,
+    "title": "Consultas parametrizadas",
+    "category": "AppSec",
+    "criticality": "Crítica",
+    "risk": "SQL injection",
+    "files": [
+      "api/routes.py"
+    ],
+    "required_tests": [
+      "test_sql_injection",
+      "test_api_validation"
+    ],
+    "residual": "Parametrização não decide autorização ou regras de negócio.",
+    "implemented": true,
+    "positive": "Pesquisa legítima encontra cliente da empresa; campos válidos geram pedido.",
+    "negative": "String com aspas/OR é tratada como dado; mass assignment e tipos inválidos são rejeitados.",
+    "objective": "Separar dados da sintaxe SQL e validar regras de negócio.",
+    "configuration": {
+      "path": "api/routes.py",
+      "start_line": 38,
+      "excerpt": "def customers(q: str = Query(\"\", max_length=80), user=Depends(current_user)):\n    with tenant_tx(user) as conn:\n        return conn.execute(\"SELECT id,name,email FROM lab.customers WHERE name ILIKE %s ORDER BY name LIMIT 100\", (f\"%{q}%\",), prepare=True).fetchall()\n\n@router.get(\"/orders\")\ndef orders(user=Depends(current_user)):\n    with tenant_tx(user) as conn:\n        return conn.execute(\"\"\"SELECT o.id,o.customer_id,c.name AS customer,o.description,o.total,o.status,o.created_at\n            FROM lab.orders o JOIN lab.customers c ON (c.tenant_id,c.id)=(o.tenant_id,o.customer_id)\n            ORDER BY o.created_at DESC LIMIT 100\"\"\").fetchall()\n\n@router.get(\"/orders/{order_id}\")\ndef order(order_id: UUID, user=Depends(current_user)):\n    with tenant_tx(user) as conn:\n        row = conn.execute(\"SELECT id,customer_id,description,total,status,created_at FROM lab.orders WHERE id=%s\", (order_id,)).fetchone()\n    if not row:\n        raise HTTPException(404, \"Pedido não encontrado.\")\n    return row\n\n@router.post(\"/orders\", status_code=201)\ndef create_order(body: OrderCreate, user=Depends(editor)):\n    try:\n        with tenant_tx(user) as conn:\n            if not conn.execute(\"SELECT 1 FROM lab.customers WHERE id=%s\", (body.customer_id,)).fetchone():"
+    }
+  },
+  {
+    "id": "SQL-08",
+    "lab": "SQL",
+    "step": 8,
+    "title": "Trilha de auditoria",
+    "category": "Observabilidade",
+    "criticality": "Alta",
+    "risk": "Ações sem rastreabilidade",
+    "files": [
+      "api/audit.py",
+      "sql/schema.sql",
+      "config/postgresql.conf"
+    ],
+    "required_tests": [
+      "test_sql_audit"
+    ],
+    "residual": "Admin pode alterar logs; não há SIEM nem trilha imutável.",
+    "implemented": true,
+    "positive": "INSERT de pedido aparece no trigger; conexão, DDL e falha de login aparecem no log real.",
+    "negative": "A API não lê auditoria de outra empresa nem exporta senha, token, corpo ou SQL do log bruto.",
+    "objective": "Registrar autoria, horário e operações críticas sem divulgar segredos.",
+    "configuration": {
+      "path": "api/audit.py",
+      "start_line": 1,
+      "excerpt": "import json\nimport os\nimport threading\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom .config import ROOT\n\n_lock = threading.Lock()\n\ndef audit(event, actor=None, tenant=None, outcome=\"success\"):\n    path = Path(os.getenv(\"LAB_AUDIT\", ROOT / \".local/audit/events.jsonl\"))\n    path.parent.mkdir(parents=True, exist_ok=True)\n    # No request bodies, query strings, credentials, cookies, SQL or exception text.\n    item = {\"timestamp\": datetime.now(timezone.utc).isoformat(), \"event\": event,\n            \"actor\": str(actor) if actor else None, \"tenant_id\": str(tenant) if tenant else None,\n            \"outcome\": outcome}\n    with _lock, path.open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(json.dumps(item, ensure_ascii=False) + \"\\n\")"
+    }
+  },
+  {
+    "id": "SQL-09",
+    "lab": "SQL",
+    "step": 9,
+    "title": "Backup e restauração",
+    "category": "Continuidade",
+    "criticality": "Alta",
+    "risk": "Perda irreversível de dados",
+    "files": [
+      "scripts/backup_restore.py"
+    ],
+    "required_tests": [
+      "test_sql_backup"
+    ],
+    "residual": "Sem agenda, offsite, HA ou PITR; chave guardada no mesmo host.",
+    "implemented": true,
+    "positive": "pg_dump com snapshot e pg_restore em base nova produzem contagens e fingerprints iguais.",
+    "negative": "Guardião recusa o nome da origem ou destinos fora do prefixo; divergência/tampering impede aprovação.",
+    "objective": "Demonstrar recuperação SQL a partir de cópia cifrada.",
+    "configuration": {
+      "path": "scripts/backup_restore.py",
+      "start_line": 1,
+      "excerpt": "\"\"\"Isolated, encrypted round trips. No drop, overwrite, or restore into source.\"\"\"\nimport argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport secrets\nimport subprocess\nimport tempfile\nimport time\nfrom datetime import datetime, timezone\nfrom uuid import uuid4\nfrom cryptography.hazmat.primitives.ciphers.aead import AESGCM\nfrom psycopg import sql\nfrom psycopg.rows import dict_row\nfrom seed import pg_admin, mongo_admin, admin_settings, ROOT\n\nTABLES=['lab.tenants','lab.customers','lab.orders']\n\ndef fingerprint_rows(rows):\n    canonical=sorted(json.dumps(r,sort_keys=True,default=str,ensure_ascii=False) for r in rows)\n    return {'count':len(rows),'sha256':hashlib.sha256('\\n'.join(canonical).encode()).hexdigest()}\n\ndef sql_fingerprints(conn):"
+    }
+  },
+  {
+    "id": "SQL-10",
+    "lab": "SQL",
+    "step": 10,
+    "title": "Checklist e testes finais",
+    "category": "Qualidade",
+    "criticality": "Alta",
+    "risk": "Falsa sensação de proteção",
+    "files": [
+      "tests/test_sql.py",
+      "tests/test_api.py"
+    ],
+    "required_tests": [
+      "test_sql_final"
+    ],
+    "residual": "Testes limitados aos cenários e versões registrados.",
+    "implemented": true,
+    "positive": "Checklist final exige PASS nos cenários SQL e arquivo de riscos residuais existente.",
+    "negative": "Falha ou ausência de cenário obrigatório impede aprovação; ENV-01 continua exigido no ambiente.",
+    "objective": "Consolidar os testes SQL e os limites do experimento.",
+    "configuration": {
+      "path": "tests/test_sql.py",
+      "start_line": 1,
+      "excerpt": "import json\nimport os\nimport time\nfrom uuid import UUID,uuid4\nimport psycopg\nfrom psycopg import errors\nimport pytest\nfrom api.db import pg_connect,tenant_tx\nfrom api.config import settings\nfrom seed import pg_admin\npytestmark=pytest.mark.integration\nA=UUID('11111111-1111-4111-8111-111111111111'); B=UUID('22222222-2222-4222-8222-222222222222')\n\n@pytest.mark.controls('SQL-01')\ndef test_sql_environment(observed):\n    with pg_admin() as conn:\n        version=conn.execute('SHOW server_version').fetchone()[0]\n        assert version.startswith('17.')\n        assert conn.execute(\"SELECT name FROM lab.customers WHERE id='a1111111-1111-4111-8111-111111111111'\").fetchone()[0]=='Estúdio Horizonte'\n    observed.update(server_version=version,persistent_tables=['lab.tenants','lab.customers','lab.orders'],unicode_data='UTF-8 verified',profile=os.getenv('LAB_TEST_ENV'))\n\n@pytest.mark.controls('SQL-02')\ndef test_sql_roles(observed):\n    with pg_connect() as conn:"
+    }
+  },
+  {
+    "id": "NOSQL-01",
+    "lab": "NOSQL",
+    "step": 1,
+    "title": "Ambiente isolado",
+    "category": "Infraestrutura",
+    "criticality": "Alta",
+    "risk": "Exposição e perda de documentos",
+    "files": [
+      "docker-compose.yml"
+    ],
+    "required_tests": [
+      "test_mongo_environment",
+      "ENV-01"
+    ],
+    "residual": "Host e volume único permanecem pontos de falha.",
+    "implemented": true,
+    "positive": "Servidor Community 8.0 responde; contêiner e ausência de publicação são observados por ENV-01.",
+    "negative": "Inspeção recusa publicação de porta ou rede interna ausente; não se presume Docker pelo teste nativo.",
+    "objective": "Executar MongoDB Community persistente e isolado.",
+    "configuration": {
+      "path": "docker-compose.yml",
+      "start_line": 1,
+      "excerpt": "name: securedb-lab\nservices:\n  audit-init:\n    image: python:3.12.12-slim-bookworm\n    network_mode: none\n    read_only: true\n    security_opt: [no-new-privileges:true]\n    volumes: [\"auditdata:/audit\"]\n    command: [\"python\", \"-c\", \"import os; os.makedirs('/audit',exist_ok=True); open('/audit/events.jsonl','a').close(); os.chown('/audit',10001,10001); os.chown('/audit/events.jsonl',10001,10001); os.chmod('/audit',0o700); os.chmod('/audit/events.jsonl',0o600)\"]\n  postgres:\n    image: postgres:17.6-bookworm\n    entrypoint: [\"/bin/sh\", \"/lab-scripts/pg-entrypoint.sh\"]\n    environment:\n      POSTGRES_DB: securedb\n      POSTGRES_USER: postgres\n      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run setup first}\n      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Run setup first}\n      POSTGRES_AUTH_PASSWORD: ${POSTGRES_AUTH_PASSWORD:?Run setup first}\n      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n      - ./sql:/lab-sql:ro\n      - ./scripts:/lab-scripts:ro\n      - ./scripts/pg-init.sh:/docker-entrypoint-initdb.d/10-lab.sh:ro"
+    }
+  },
+  {
+    "id": "NOSQL-02",
+    "lab": "NOSQL",
+    "step": 2,
+    "title": "Administrador separado",
+    "category": "Identidade",
+    "criticality": "Crítica",
+    "risk": "Uso de root no runtime",
+    "files": [
+      "nosql/users_roles.js"
+    ],
+    "required_tests": [
+      "test_mongo_admin_separation"
+    ],
+    "residual": "Root é necessário para bootstrap e restauração didática.",
+    "implemented": true,
+    "positive": "connectionStatus identifica api_user@lab; administrador distinto existe.",
+    "negative": "A identidade da aplicação não aparece como lab_admin/root no runtime.",
+    "objective": "Separar a conta root da identidade da API MongoDB.",
+    "configuration": {
+      "path": "nosql/users_roles.js",
+      "start_line": 1,
+      "excerpt": "(()=>{\nconst admin = db.getSiblingDB('admin');\nif (!admin.getUser('lab_admin')) admin.createUser({user:'lab_admin',pwd:process.env.MONGO_ADMIN_PASSWORD,roles:[{role:'root',db:'admin'}]});\nconst lab = db.getSiblingDB('lab');\nif (!lab.getRole('catalog_api')) lab.createRole({role:'catalog_api',privileges:[\n {resource:{db:'lab',collection:'products'},actions:['find','insert','update']},\n {resource:{db:'lab',collection:'profiles'},actions:['find','insert','update']}\n],roles:[]});\nif (!lab.getUser('api_user')) lab.createUser({user:'api_user',pwd:process.env.MONGO_APP_PASSWORD,roles:[{role:'catalog_api',db:'lab'}]});\nload('/lab-nosql/schema_validation.js');\nload('/lab-nosql/seeds.js');\n})();"
+    }
+  },
+  {
+    "id": "NOSQL-03",
+    "lab": "NOSQL",
+    "step": 3,
+    "title": "Autenticação obrigatória",
+    "category": "Identidade",
+    "criticality": "Crítica",
+    "risk": "Acesso anônimo aos documentos",
+    "files": [
+      "config/mongod.conf"
+    ],
+    "required_tests": [
+      "test_mongo_anonymous"
+    ],
+    "residual": "Ping pode ser anônimo; operação de dados deve ser negada.",
+    "implemented": true,
+    "positive": "api_user autenticado lê produtos; login válido da aplicação funciona.",
+    "negative": "Cliente anônimo recebe erro 13 ao ler coleção; ping anônimo não é aceito como prova de leitura.",
+    "objective": "Exigir autenticação para acessar dados MongoDB.",
+    "configuration": {
+      "path": "config/mongod.conf",
+      "start_line": 1,
+      "excerpt": "storage:\n  dbPath: /data/db\nnet:\n  port: 27017\n  bindIp: 0.0.0.0\n  tls:\n    mode: requireTLS\n    certificateKeyFile: /tmp/mongo-tls/server.pem\n    CAFile: /tmp/mongo-tls/ca.crt\n    allowConnectionsWithoutCertificates: true\n    disabledProtocols: TLS1_0,TLS1_1\nsecurity:\n  authorization: enabled\n  javascriptEnabled: false\nsetParameter:\n  enableLocalhostAuthBypass: false\nsystemLog:\n  destination: file\n  path: /data/db/mongod.log\n  logAppend: true"
+    }
+  },
+  {
+    "id": "NOSQL-04",
+    "lab": "NOSQL",
+    "step": 4,
+    "title": "RBAC por coleção",
+    "category": "Autorização",
+    "criticality": "Crítica",
+    "risk": "Criação de usuários ou desvio de schema",
+    "files": [
+      "nosql/users_roles.js"
+    ],
+    "required_tests": [
+      "test_mongo_rbac",
+      "test_api_viewer_and_csrf"
+    ],
+    "residual": "Isolamento por empresa é da API; MongoDB não implementa RLS aqui.",
+    "implemented": true,
+    "positive": "Leitura e escrita nas coleções previstas funcionam com papel mínimo.",
+    "negative": "usersInfo admin, createUser, collMod e escrita em coleção não concedida recebem erro 13.",
+    "objective": "Restringir ações e coleções da aplicação.",
+    "configuration": {
+      "path": "nosql/users_roles.js",
+      "start_line": 1,
+      "excerpt": "(()=>{\nconst admin = db.getSiblingDB('admin');\nif (!admin.getUser('lab_admin')) admin.createUser({user:'lab_admin',pwd:process.env.MONGO_ADMIN_PASSWORD,roles:[{role:'root',db:'admin'}]});\nconst lab = db.getSiblingDB('lab');\nif (!lab.getRole('catalog_api')) lab.createRole({role:'catalog_api',privileges:[\n {resource:{db:'lab',collection:'products'},actions:['find','insert','update']},\n {resource:{db:'lab',collection:'profiles'},actions:['find','insert','update']}\n],roles:[]});\nif (!lab.getUser('api_user')) lab.createUser({user:'api_user',pwd:process.env.MONGO_APP_PASSWORD,roles:[{role:'catalog_api',db:'lab'}]});\nload('/lab-nosql/schema_validation.js');\nload('/lab-nosql/seeds.js');\n})();"
+    }
+  },
+  {
+    "id": "NOSQL-05",
+    "lab": "NOSQL",
+    "step": 5,
+    "title": "Rede restrita",
+    "category": "Infraestrutura",
+    "criticality": "Alta",
+    "risk": "Alcance público da porta",
+    "files": [
+      "docker-compose.yml",
+      "config/mongod.conf"
+    ],
+    "required_tests": [
+      "test_mongo_network",
+      "ENV-01"
+    ],
+    "residual": "0.0.0.0 no contêiner depende de rede isolada e ausência de publicação.",
+    "implemented": true,
+    "positive": "getCmdLineOpts confirma bindIp; ENV-01 inspeciona rede e PortBindings reais.",
+    "negative": "Banco publicado ou rede não interna reprova ENV-01; 0.0.0.0 isoladamente não comprova proteção.",
+    "objective": "Conter alcance de rede e verificar configuração efetiva.",
+    "configuration": {
+      "path": "docker-compose.yml",
+      "start_line": 1,
+      "excerpt": "name: securedb-lab\nservices:\n  audit-init:\n    image: python:3.12.12-slim-bookworm\n    network_mode: none\n    read_only: true\n    security_opt: [no-new-privileges:true]\n    volumes: [\"auditdata:/audit\"]\n    command: [\"python\", \"-c\", \"import os; os.makedirs('/audit',exist_ok=True); open('/audit/events.jsonl','a').close(); os.chown('/audit',10001,10001); os.chown('/audit/events.jsonl',10001,10001); os.chmod('/audit',0o700); os.chmod('/audit/events.jsonl',0o600)\"]\n  postgres:\n    image: postgres:17.6-bookworm\n    entrypoint: [\"/bin/sh\", \"/lab-scripts/pg-entrypoint.sh\"]\n    environment:\n      POSTGRES_DB: securedb\n      POSTGRES_USER: postgres\n      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run setup first}\n      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Run setup first}\n      POSTGRES_AUTH_PASSWORD: ${POSTGRES_AUTH_PASSWORD:?Run setup first}\n      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n      - ./sql:/lab-sql:ro\n      - ./scripts:/lab-scripts:ro\n      - ./scripts/pg-init.sh:/docker-entrypoint-initdb.d/10-lab.sh:ro"
+    }
+  },
+  {
+    "id": "NOSQL-06",
+    "lab": "NOSQL",
+    "step": 6,
+    "title": "TLS obrigatório",
+    "category": "Criptografia",
+    "criticality": "Alta",
+    "risk": "Canal sem verificação",
+    "files": [
+      "config/mongod.conf"
+    ],
+    "required_tests": [
+      "test_mongo_tls"
+    ],
+    "residual": "TLS do banco não protege navegador HTTP local.",
+    "implemented": true,
+    "positive": "Cliente com CA correta e hostname previsto consulta documentos via TLS.",
+    "negative": "Plaintext, CA não confiável e hostname divergente são rejeitados.",
+    "objective": "Exigir TLS e validar CA/hostname no cliente MongoDB.",
+    "configuration": {
+      "path": "config/mongod.conf",
+      "start_line": 1,
+      "excerpt": "storage:\n  dbPath: /data/db\nnet:\n  port: 27017\n  bindIp: 0.0.0.0\n  tls:\n    mode: requireTLS\n    certificateKeyFile: /tmp/mongo-tls/server.pem\n    CAFile: /tmp/mongo-tls/ca.crt\n    allowConnectionsWithoutCertificates: true\n    disabledProtocols: TLS1_0,TLS1_1\nsecurity:\n  authorization: enabled\n  javascriptEnabled: false\nsetParameter:\n  enableLocalhostAuthBypass: false\nsystemLog:\n  destination: file\n  path: /data/db/mongod.log\n  logAppend: true"
+    }
+  },
+  {
+    "id": "NOSQL-07",
+    "lab": "NOSQL",
+    "step": 7,
+    "title": "Schema no SGBD",
+    "category": "Integridade",
+    "criticality": "Alta",
+    "risk": "Documentos inconsistentes",
+    "files": [
+      "nosql/schema_validation.js",
+      "nosql/schemas.json"
+    ],
+    "required_tests": [
+      "test_mongo_schema"
+    ],
+    "residual": "Validação sintática não comprova veracidade dos dados.",
+    "implemented": true,
+    "positive": "Produto/perfil válido é aceito por escrita direta PyMongo, sem passar por Pydantic.",
+    "negative": "Preço negativo e e-mail inválido são recusados pelo MongoDB com código 121.",
+    "objective": "Aplicar integridade documental diretamente no SGBD.",
+    "configuration": {
+      "path": "nosql/schema_validation.js",
+      "start_line": 1,
+      "excerpt": "// Loaded only by bootstrap/seed tooling, never from user input.\n(()=>{\nconst tenant = {bsonType: 'string', pattern: '^[a-f0-9-]{36}$'};\nconst common = {_id: tenant, tenant_id: tenant, name: {bsonType:'string',minLength:3,maxLength:100}, active:{bsonType:'bool'}};\nconst schemas = {\n products: {bsonType:'object',additionalProperties:false,required:['_id','tenant_id','name','sku','category','price_cents','active'],properties:{...common,\n  sku:{bsonType:'string',pattern:'^[A-Z0-9-]{3,32}$'},category:{enum:['Equipamentos','Software','Serviços']},price_cents:{bsonType:'int',minimum:1,maximum:100000000}}},\n profiles: {bsonType:'object',additionalProperties:false,required:['_id','tenant_id','name','email','segment','active'],properties:{...common,\n  email:{bsonType:'string',maxLength:150,pattern:'^[A-Za-z0-9_.+-]+@example\\\\.test$'},segment:{enum:['Essencial','Corporativo','Estratégico']}}}\n};\nconst lab = db.getSiblingDB('lab');\nfor (const [name,schema] of Object.entries(schemas)) {\n if (!lab.getCollectionNames().includes(name)) lab.createCollection(name,{validator:{$jsonSchema:schema},validationAction:'error',validationLevel:'strict'});\n else lab.runCommand({collMod:name,validator:{$jsonSchema:schema},validationAction:'error',validationLevel:'strict'});\n}\nlab.products.createIndex({tenant_id:1,sku:1},{unique:true});\nlab.profiles.createIndex({tenant_id:1,email:1},{unique:true});\n})();"
+    }
+  },
+  {
+    "id": "NOSQL-08",
+    "lab": "NOSQL",
+    "step": 8,
+    "title": "Filtros tipados",
+    "category": "AppSec",
+    "criticality": "Crítica",
+    "risk": "Ampliação de consulta com operadores",
+    "files": [
+      "api/models.py",
+      "api/db.py"
+    ],
+    "required_tests": [
+      "test_mongo_injection",
+      "test_profile_search"
+    ],
+    "residual": "Filtros internos ainda precisam de revisão de autorização.",
+    "implemented": true,
+    "positive": "Pesquisa legítima de produto/perfil e filtro de categoria/segmento preservam a empresa.",
+    "negative": "q[$ne], $where, objetos e parâmetros extras são recusados; .* não amplia resultados.",
+    "objective": "Construir buscas tipadas e literais com escopo da sessão.",
+    "configuration": {
+      "path": "api/db.py",
+      "start_line": 34,
+      "excerpt": "def catalog_filter(tenant_id, q=\"\", category=None):\n    result = {\"tenant_id\": str(tenant_id)}\n    if q:\n        result[\"name\"] = {\"$regex\": re.escape(q), \"$options\": \"i\"}\n    if category:\n        result[\"category\"] = category\n    return result\n\ndef profile_filter(tenant_id, q=\"\", segment=None):\n    result={\"tenant_id\":str(tenant_id)}\n    if q:\n        literal={\"$regex\":re.escape(q),\"$options\":\"i\"}\n        result[\"$or\"]=[{\"name\":literal},{\"email\":literal}]\n    if segment:result[\"segment\"]=segment\n    return result"
+    }
+  },
+  {
+    "id": "NOSQL-09",
+    "lab": "NOSQL",
+    "step": 9,
+    "title": "Backup e restauração",
+    "category": "Continuidade",
+    "criticality": "Alta",
+    "risk": "Perda de coleções",
+    "files": [
+      "scripts/backup_restore.py"
+    ],
+    "required_tests": [
+      "test_mongo_backup"
+    ],
+    "residual": "Standalone não oferece snapshot consistente multi-documento; pausar escritas.",
+    "implemented": true,
+    "positive": "mongodump/mongorestore em namespace novo preservam contagens e fingerprints de ambas as coleções.",
+    "negative": "Destino de origem é proibido; divergência de conteúdo ou mudança persistente durante dump impede PASS.",
+    "objective": "Demonstrar restauração de documentos a partir de cópia cifrada.",
+    "configuration": {
+      "path": "scripts/backup_restore.py",
+      "start_line": 1,
+      "excerpt": "\"\"\"Isolated, encrypted round trips. No drop, overwrite, or restore into source.\"\"\"\nimport argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport secrets\nimport subprocess\nimport tempfile\nimport time\nfrom datetime import datetime, timezone\nfrom uuid import uuid4\nfrom cryptography.hazmat.primitives.ciphers.aead import AESGCM\nfrom psycopg import sql\nfrom psycopg.rows import dict_row\nfrom seed import pg_admin, mongo_admin, admin_settings, ROOT\n\nTABLES=['lab.tenants','lab.customers','lab.orders']\n\ndef fingerprint_rows(rows):\n    canonical=sorted(json.dumps(r,sort_keys=True,default=str,ensure_ascii=False) for r in rows)\n    return {'count':len(rows),'sha256':hashlib.sha256('\\n'.join(canonical).encode()).hexdigest()}\n\ndef sql_fingerprints(conn):"
+    }
+  },
+  {
+    "id": "NOSQL-10",
+    "lab": "NOSQL",
+    "step": 10,
+    "title": "Checklist e testes finais",
+    "category": "Qualidade",
+    "criticality": "Alta",
+    "risk": "Controle declarado sem prova",
+    "files": [
+      "tests/test_mongo.py"
+    ],
+    "required_tests": [
+      "test_mongo_final"
+    ],
+    "residual": "Community sem auditoria Enterprise; suíte não é auditoria formal.",
+    "implemented": true,
+    "positive": "Checklist requer PASS em autenticação, RBAC, rede observada, TLS, schema, filtros e restore.",
+    "negative": "Cenário obrigatório ausente/falho impede aprovação; não se declara auditoria Enterprise.",
+    "objective": "Consolidar testes NoSQL e riscos residuais.",
+    "configuration": {
+      "path": "tests/test_mongo.py",
+      "start_line": 1,
+      "excerpt": "import json\nfrom pathlib import Path\nimport socket\nimport ssl\nfrom uuid import uuid4\nfrom pymongo import MongoClient\nfrom pymongo.errors import OperationFailure,WriteError,ServerSelectionTimeoutError,ConnectionFailure\nimport pytest\nfrom api.config import settings\nfrom api.db import mongo_client\nfrom seed import mongo_admin\npytestmark=pytest.mark.integration\n\n@pytest.mark.controls('NOSQL-01')\ndef test_mongo_environment(observed):\n    version=mongo_admin().server_info()['version']\n    assert version.startswith('8.0.')\n    observed.update(server_version=version,edition='Community')\n\n@pytest.mark.controls('NOSQL-02')\ndef test_mongo_admin_separation(observed):\n    status=mongo_client().admin.command('connectionStatus')\n    users=status['authInfo']['authenticatedUsers']\n    assert users==[{'user':'api_user','db':'lab'}]"
+    }
+  }
+]

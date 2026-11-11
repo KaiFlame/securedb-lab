@@ -1,0 +1,13 @@
+{
+  "id": "test_filters_reject_operators_and_escape_regex",
+  "controls": [],
+  "objective": "test_filters_reject_operators_and_escape_regex",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:32.890731+00:00",
+  "observed": {
+    "regex": "escaped",
+    "tenant": "server-side"
+  },
+  "duration_seconds": 0.0001,
+  "artifact": "evidencias/app/test_filters_reject_operators_and_escape_regex.json"
+}

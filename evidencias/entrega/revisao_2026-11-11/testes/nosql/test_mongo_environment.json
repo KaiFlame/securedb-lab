@@ -1,0 +1,15 @@
+{
+  "id": "test_mongo_environment",
+  "controls": [
+    "NOSQL-01"
+  ],
+  "objective": "test_mongo_environment",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.753928+00:00",
+  "observed": {
+    "server_version": "8.0.8",
+    "edition": "Community"
+  },
+  "duration_seconds": 0.0947,
+  "artifact": "evidencias/nosql/test_mongo_environment.json"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "test_controls_require_complete_evidence",
+  "controls": [],
+  "objective": "test_controls_require_complete_evidence",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:32.899245+00:00",
+  "observed": {
+    "empty": "20 pending",
+    "skip": "remains pending"
+  },
+  "duration_seconds": 0.0016,
+  "artifact": "evidencias/app/test_controls_require_complete_evidence.json"
+}

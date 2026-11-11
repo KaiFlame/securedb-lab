@@ -1,0 +1,23 @@
+{
+  "id": "test_sql_audit",
+  "controls": [
+    "SQL-08"
+  ],
+  "objective": "test_sql_audit",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:32.263906+00:00",
+  "observed": {
+    "order_event": {
+      "entity_id": "433015fb-53ff-4142-bedd-c5b88c3a1537",
+      "operation": "INSERT"
+    },
+    "database_logs": {
+      "connection": true,
+      "ddl": true,
+      "failed_auth": true
+    },
+    "export": "only event presence; raw lines excluded"
+  },
+  "duration_seconds": 1.7659,
+  "artifact": "evidencias/sql/test_sql_audit.json"
+}

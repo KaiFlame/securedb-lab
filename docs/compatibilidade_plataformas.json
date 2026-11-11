@@ -1,0 +1,151 @@
+{
+  "schema": "securedb-lab/official-platform-verification/v1",
+  "verified_at_utc": "2026-11-11T19:07:24Z",
+  "scope": "Read-only HTTPS metadata verification. No Docker daemon, image build, container execution, archive download, or runtime compatibility test.",
+  "image_registry": {
+    "auth_source": "https://auth.docker.io/token?service=registry.docker.io&scope=repository:library:{repository}:pull",
+    "accept": [
+      "application/vnd.oci.image.index.v1+json",
+      "application/vnd.docker.distribution.manifest.list.v2+json"
+    ],
+    "observations": [
+      {
+        "image": "postgres:17.6-bookworm",
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.6-bookworm",
+        "http_status": 200,
+        "media_type": "application/vnd.oci.image.index.v1+json",
+        "index_digest": "sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+        "verified_platforms": [
+          {
+            "os": "linux",
+            "architecture": "amd64",
+            "digest": "sha256:45cd22f8d32e189d245403954882f88e7a8714301fda80dab6da90f1265b25a3"
+          },
+          {
+            "os": "linux",
+            "architecture": "arm64",
+            "variant": "v8",
+            "digest": "sha256:5d11ffb37e58a7c9a2285359e50f7674e216c99b9114e47b0e7f21187c11252c"
+          }
+        ],
+        "platform_scope": "Both required architectures present; not an exhaustive list of all manifest platforms."
+      },
+      {
+        "image": "mongo:8.0.15",
+        "source": "https://registry-1.docker.io/v2/library/mongo/manifests/8.0.15",
+        "http_status": 200,
+        "media_type": "application/vnd.oci.image.index.v1+json",
+        "index_digest": "sha256:f4d54619262ae3bc6a0a8efbebcef970b87b8ad70697479a75ce308a6f400158",
+        "verified_platforms": [
+          {
+            "os": "linux",
+            "architecture": "amd64",
+            "digest": "sha256:8332f93f6cb881db35f58caaea2e986e6044f97a3cf2629515875361b3ae359c"
+          },
+          {
+            "os": "linux",
+            "architecture": "arm64",
+            "variant": "v8",
+            "digest": "sha256:e83856bc01775a1c8ed2a25720627ea0d9f145a612cd12ad7350155222976d64"
+          }
+        ],
+        "platform_scope": "Both required architectures present; not an exhaustive list of all manifest platforms."
+      },
+      {
+        "image": "python:3.12.12-slim-bookworm",
+        "source": "https://registry-1.docker.io/v2/library/python/manifests/3.12.12-slim-bookworm",
+        "http_status": 200,
+        "media_type": "application/vnd.oci.image.index.v1+json",
+        "index_digest": "sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c",
+        "verified_platforms": [
+          {
+            "os": "linux",
+            "architecture": "amd64",
+            "digest": "sha256:2986c55feb36e6cae00fa1fefb454283e4b33f35e75ff8bdd123b134130be301"
+          },
+          {
+            "os": "linux",
+            "architecture": "arm64",
+            "variant": "v8",
+            "digest": "sha256:228390eced221ad2986a3dd77e10b1accca6ba8ceb36f1572de1b346a337cc1a"
+          }
+        ],
+        "platform_scope": "Both required architectures present; not an exhaustive list of all manifest platforms."
+      },
+      {
+        "image": "node:22.20.0-alpine3.22",
+        "source": "https://registry-1.docker.io/v2/library/node/manifests/22.20.0-alpine3.22",
+        "http_status": 200,
+        "media_type": "application/vnd.oci.image.index.v1+json",
+        "index_digest": "sha256:dbcedd8aeab47fbc0f4dd4bffa55b7c3c729a707875968d467aaaea42d6225af",
+        "verified_platforms": [
+          {
+            "os": "linux",
+            "architecture": "amd64",
+            "digest": "sha256:aa83e8f13963f17f7f6bd497085112bf12ea6f20b4b826d9b33f2d99594325b6"
+          },
+          {
+            "os": "linux",
+            "architecture": "arm64",
+            "variant": "v8",
+            "digest": "sha256:74e144386aaec923ce092c3371b351d96c4f977a4ac3f58431fa9164b9399534"
+          }
+        ],
+        "platform_scope": "Both required architectures present; not an exhaustive list of all manifest platforms."
+      },
+      {
+        "image": "nginx:1.28.0-alpine",
+        "source": "https://registry-1.docker.io/v2/library/nginx/manifests/1.28.0-alpine",
+        "http_status": 200,
+        "media_type": "application/vnd.oci.image.index.v1+json",
+        "index_digest": "sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+        "verified_platforms": [
+          {
+            "os": "linux",
+            "architecture": "amd64",
+            "digest": "sha256:09ab424a8c788f8d0fe3a64429f6d19dfa526885c8609b748d0943a75dcb9f8c"
+          },
+          {
+            "os": "linux",
+            "architecture": "arm64",
+            "variant": "v8",
+            "digest": "sha256:e8552debd77891036e8928d45f6f6e6d9eee56ce720668c0cdd723f963c3a5c5"
+          }
+        ],
+        "platform_scope": "Both required architectures present; not an exhaustive list of all manifest platforms."
+      }
+    ]
+  },
+  "mongodb_database_tools": {
+    "version": "100.13.0",
+    "checksum_source": "https://downloads.mongodb.org/tools/db/full.json",
+    "source_http_status": 200,
+    "selection": "versions[version == '100.13.0'].downloads[name == 'ubuntu2204'].archive",
+    "archives": [
+      {
+        "architecture": "arm64",
+        "url": "https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-arm64-100.13.0.tgz",
+        "head_http_status": 200,
+        "content_length_bytes": 65086195,
+        "sha256": "bd404104d7239cc5e88d5ed326870bd851b2012eef92797bfad5c9aa254a364e"
+      },
+      {
+        "architecture": "x86_64",
+        "url": "https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.13.0.tgz",
+        "head_http_status": 200,
+        "content_length_bytes": 69685061,
+        "sha256": "490dcd081cd067209062b7a09f2969dc783c6fecf4457d3405a4b4635a7e1fac"
+      }
+    ],
+    "observations": [
+      "The .tgz.sha256 and .tgz.sha256sum suffixes returned HTTP 403 for both archives.",
+      "release.json contained only the current version; full.json included historical version 100.13.0.",
+      "The hashes above were read from official metadata, not computed from downloaded archive contents.",
+      "Ubuntu 22.04 archives are published for both architectures. Running their binaries inside Debian Bookworm was not tested."
+    ]
+  },
+  "limitations": [
+    "Availability of native linux/arm64 manifests is not evidence of successful installation on macOS.",
+    "Docker Compose startup, database initialization, volume permissions, network controls, backups, and HTTP flows were not executed by this verification."
+  ]
+}

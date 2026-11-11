@@ -1,0 +1,12 @@
+{
+  "id": "test_desktop_restart_clears_old_stop_before_gui",
+  "controls": [],
+  "objective": "test_desktop_restart_clears_old_stop_before_gui",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.658987+00:00",
+  "observed": {
+    "previous_stop_marker": "cleared before GUI polling"
+  },
+  "duration_seconds": 0.0021,
+  "artifact": "evidencias/app/test_desktop_restart_clears_old_stop_before_gui.json"
+}

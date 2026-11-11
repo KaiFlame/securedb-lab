@@ -1,0 +1,821 @@
+{
+  "timestamp": "2026-11-11T19:12:47.293157+00:00",
+  "environment": "Windows nativo / revisao Docker-macOS / bancos e HTTP reais / TLS verificado / Compose nao executado",
+  "exit_code": 0,
+  "tests": [
+    {
+      "id": "test_api_authentication",
+      "controls": [
+        "SQL-04",
+        "NOSQL-03"
+      ],
+      "objective": "Login aceito/negado, sessão invalidada e endpoint sem identidade.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:33.649840+00:00",
+      "observed": {
+        "unauthenticated": 401,
+        "bad_password": 401,
+        "valid_login": 200,
+        "logout": "invalidates session"
+      },
+      "duration_seconds": 0.3596,
+      "artifact": "evidencias/sql/test_api_authentication.json"
+    },
+    {
+      "id": "test_api_tenant_access",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "Empresa A não lê ID da B; B consulta o mesmo ID normalmente.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:34.249620+00:00",
+      "observed": {
+        "A_reads_B": 404,
+        "B_reads_B": 200,
+        "tenant_source": "authenticated account"
+      },
+      "duration_seconds": 0.5959,
+      "artifact": "evidencias/sql/test_api_tenant_access.json"
+    },
+    {
+      "id": "test_api_write_scope",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "SELECT/INSERT/UPDATE entre empresas e operação legítima na A.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:34.918126+00:00",
+      "observed": {
+        "cross_tenant_insert": 404,
+        "cross_tenant_update": 404,
+        "own_insert": 201,
+        "own_update": 200,
+        "invalid_transition": 409
+      },
+      "duration_seconds": 0.6656,
+      "artifact": "evidencias/sql/test_api_write_scope.json"
+    },
+    {
+      "id": "test_api_viewer_and_csrf",
+      "controls": [
+        "SQL-03",
+        "NOSQL-04"
+      ],
+      "objective": "test_api_viewer_and_csrf",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:35.432834+00:00",
+      "observed": {
+        "viewer_read": 200,
+        "viewer_write": 403,
+        "invalid_csrf": 403
+      },
+      "duration_seconds": 0.5119,
+      "artifact": "evidencias/sql/test_api_viewer_and_csrf.json"
+    },
+    {
+      "id": "test_api_validation",
+      "controls": [
+        "SQL-07",
+        "NOSQL-08"
+      ],
+      "objective": "test_api_validation",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:35.837838+00:00",
+      "observed": {
+        "extra_tenant": 422,
+        "operator_query": 422,
+        "operator_string": 422,
+        "object_price": 422,
+        "oversized_limit": 422
+      },
+      "duration_seconds": 0.4012,
+      "artifact": "evidencias/sql/test_api_validation.json"
+    },
+    {
+      "id": "test_api_mongo_tenant_and_crud",
+      "controls": [
+        "NOSQL-08"
+      ],
+      "objective": "test_api_mongo_tenant_and_crud",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:36.569882+00:00",
+      "observed": {
+        "product_create": 201,
+        "product_update": 200,
+        "profile_create": 201,
+        "profile_update": 200,
+        "cross_tenant_update": 404
+      },
+      "duration_seconds": 0.729,
+      "artifact": "evidencias/nosql/test_api_mongo_tenant_and_crud.json"
+    },
+    {
+      "id": "test_desktop_http_proxy_and_assets",
+      "controls": [],
+      "objective": "test_desktop_http_proxy_and_assets",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.429698+00:00",
+      "observed": {
+        "actual_origin": "http://127.0.0.1:5173",
+        "health": 200,
+        "javascript_asset": "correct MIME",
+        "authentication": "real login/logout through proxy",
+        "untrusted_origin": 403,
+        "private_file": 404,
+        "directory_listing": 403,
+        "profile_search": 200,
+        "evidence_export": 200,
+        "control_details": 20
+      },
+      "duration_seconds": 0.858,
+      "artifact": "evidencias/app/test_desktop_http_proxy_and_assets.json"
+    },
+    {
+      "id": "test_setup_preserves_credentials_certificates_and_port",
+      "controls": [],
+      "objective": "test_setup_preserves_credentials_certificates_and_port",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.753066+00:00",
+      "observed": {
+        "setup": "idempotent",
+        "port": "preserved from .env",
+        "credentials": "local and stable"
+      },
+      "duration_seconds": 0.3176,
+      "artifact": "evidencias/app/test_setup_preserves_credentials_certificates_and_port.json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[0]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[0]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.756072+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[0].json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[1023]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[1023]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.758071+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[1023].json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[65536]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[65536]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.759072+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[65536].json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[invalid]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[invalid]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.761348+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[invalid].json"
+    },
+    {
+      "id": "test_environment_inspection_rejects_unsafe_topology",
+      "controls": [],
+      "objective": "test_environment_inspection_rejects_unsafe_topology",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.763353+00:00",
+      "observed": {},
+      "duration_seconds": 0.0008,
+      "artifact": "evidencias/app/test_environment_inspection_rejects_unsafe_topology.json"
+    },
+    {
+      "id": "test_build_contexts_exclude_host_dependencies_and_private_data",
+      "controls": [],
+      "objective": "test_build_contexts_exclude_host_dependencies_and_private_data",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:37.764352+00:00",
+      "observed": {},
+      "duration_seconds": 0.0005,
+      "artifact": "evidencias/app/test_build_contexts_exclude_host_dependencies_and_private_data.json"
+    },
+    {
+      "id": "test_docker_http_proxy_login_and_isolation",
+      "controls": [],
+      "objective": "test_docker_http_proxy_login_and_isolation",
+      "result": "SKIP",
+      "timestamp": "2026-11-11T19:12:37.765547+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "note": "Cenário não executado: bancos indisponíveis/não solicitados.",
+      "artifact": "evidencias/app/test_docker_http_proxy_login_and_isolation.json"
+    },
+    {
+      "id": "test_profile_search",
+      "controls": [
+        "NOSQL-08"
+      ],
+      "objective": "Pesquisa literal de nome/e-mail/segmento e rejeição de operador/tenant.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.258554+00:00",
+      "observed": {
+        "valid_search": 200,
+        "cross_tenant_results": 0,
+        "regex": "literal",
+        "operator_query": 422,
+        "invalid_segment": 422,
+        "tenant_override": 422
+      },
+      "duration_seconds": 0.4908,
+      "artifact": "evidencias/nosql/test_profile_search.json"
+    },
+    {
+      "id": "test_environment_export_and_profile_scope",
+      "controls": [],
+      "objective": "test_environment_export_and_profile_scope",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.264059+00:00",
+      "observed": {
+        "environment_receipt": "included in Docker export; excluded from native result"
+      },
+      "duration_seconds": 0.0033,
+      "artifact": "evidencias/app/test_environment_export_and_profile_scope.json"
+    },
+    {
+      "id": "test_control_details_have_real_source_and_specific_scenarios",
+      "controls": [],
+      "objective": "test_control_details_have_real_source_and_specific_scenarios",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.266064+00:00",
+      "observed": {
+        "controls": 20,
+        "source_excerpts": "match versioned files",
+        "scenarios": "specific; positive and negative"
+      },
+      "duration_seconds": 0.0014,
+      "artifact": "evidencias/app/test_control_details_have_real_source_and_specific_scenarios.json"
+    },
+    {
+      "id": "test_desktop_paths_and_cleanup_stay_inside_project",
+      "controls": [],
+      "objective": "test_desktop_paths_and_cleanup_stay_inside_project",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.272064+00:00",
+      "observed": {
+        "paths": "project-relative",
+        "traversal": "denied",
+        "database_cleanup": "not selected"
+      },
+      "duration_seconds": 0.0043,
+      "artifact": "evidencias/app/test_desktop_paths_and_cleanup_stay_inside_project.json"
+    },
+    {
+      "id": "test_desktop_restart_clears_old_stop_before_gui",
+      "controls": [],
+      "objective": "test_desktop_restart_clears_old_stop_before_gui",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.276579+00:00",
+      "observed": {
+        "previous_stop_marker": "cleared before GUI polling"
+      },
+      "duration_seconds": 0.0022,
+      "artifact": "evidencias/app/test_desktop_restart_clears_old_stop_before_gui.json"
+    },
+    {
+      "id": "test_mongo_environment",
+      "controls": [
+        "NOSQL-01"
+      ],
+      "objective": "test_mongo_environment",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.415785+00:00",
+      "observed": {
+        "server_version": "8.0.8",
+        "edition": "Community"
+      },
+      "duration_seconds": 0.138,
+      "artifact": "evidencias/nosql/test_mongo_environment.json"
+    },
+    {
+      "id": "test_mongo_admin_separation",
+      "controls": [
+        "NOSQL-02"
+      ],
+      "objective": "test_mongo_admin_separation",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.481429+00:00",
+      "observed": {
+        "runtime_identity": [
+          {
+            "user": "api_user",
+            "db": "lab"
+          }
+        ],
+        "admin_separate": true
+      },
+      "duration_seconds": 0.0653,
+      "artifact": "evidencias/nosql/test_mongo_admin_separation.json"
+    },
+    {
+      "id": "test_mongo_anonymous",
+      "controls": [
+        "NOSQL-03"
+      ],
+      "objective": "test_mongo_anonymous",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.539846+00:00",
+      "observed": {
+        "anonymous_data_read": "denied",
+        "mongodb_code": 13,
+        "note": "Unauthenticated ping is not a data access test."
+      },
+      "duration_seconds": 0.0566,
+      "artifact": "evidencias/nosql/test_mongo_anonymous.json"
+    },
+    {
+      "id": "test_mongo_rbac",
+      "controls": [
+        "NOSQL-04"
+      ],
+      "objective": "test_mongo_rbac",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.541847+00:00",
+      "observed": {
+        "collection_read": "accepted",
+        "admin_users": "denied",
+        "create_user": "denied",
+        "modify_validator": "denied",
+        "other_collection": "denied"
+      },
+      "duration_seconds": 0.0019,
+      "artifact": "evidencias/nosql/test_mongo_rbac.json"
+    },
+    {
+      "id": "test_mongo_network",
+      "controls": [
+        "NOSQL-05"
+      ],
+      "objective": "test_mongo_network",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:38.609541+00:00",
+      "observed": {
+        "bindIp": "127.0.0.1",
+        "note": "Loopback in native profile; Compose requires separate ENV-01 runtime inspection."
+      },
+      "duration_seconds": 0.0659,
+      "artifact": "evidencias/nosql/test_mongo_network.json"
+    },
+    {
+      "id": "test_mongo_tls",
+      "controls": [
+        "NOSQL-06"
+      ],
+      "objective": "test_mongo_tls",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:41.791321+00:00",
+      "observed": {
+        "verified_connection": "TLSv1.2",
+        "plaintext": "rejected",
+        "untrusted_ca": "rejected",
+        "wrong_hostname": "rejected"
+      },
+      "duration_seconds": 3.1806,
+      "artifact": "evidencias/nosql/test_mongo_tls.json"
+    },
+    {
+      "id": "test_mongo_schema",
+      "controls": [
+        "NOSQL-07"
+      ],
+      "objective": "test_mongo_schema",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:41.794350+00:00",
+      "observed": {
+        "valid_product": "accepted by MongoDB",
+        "invalid_product": {
+          "code": 121
+        },
+        "valid_profile": "accepted by MongoDB",
+        "invalid_profile": {
+          "code": 121
+        },
+        "validation_layer": "direct PyMongo write; Pydantic bypassed for this test"
+      },
+      "duration_seconds": 0.0021,
+      "artifact": "evidencias/nosql/test_mongo_schema.json"
+    },
+    {
+      "id": "test_mongo_injection",
+      "controls": [
+        "NOSQL-08"
+      ],
+      "objective": "test_mongo_injection",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:42.167062+00:00",
+      "observed": {
+        "operator_object": 422,
+        "where": 422,
+        "regex_metacharacters": "literal, zero results"
+      },
+      "duration_seconds": 0.3707,
+      "artifact": "evidencias/nosql/test_mongo_injection.json"
+    },
+    {
+      "id": "test_mongo_backup",
+      "controls": [
+        "NOSQL-09"
+      ],
+      "objective": "test_mongo_backup",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:42.616086+00:00",
+      "observed": {
+        "destination": "restore_mongo_8a35fae8d8d04d18bafdb0f017be145a",
+        "backup_seconds": 0.1252,
+        "restore_seconds": 0.2194,
+        "source": {
+          "products": {
+            "count": 19,
+            "sha256": "329303866db82f11080241d108915dd544a6851149471c16b44a419820e25b31"
+          },
+          "profiles": {
+            "count": 16,
+            "sha256": "5919f1150803e0c57894f0b861562be7073ca663c2b1610730d48aa217079750"
+          }
+        },
+        "restored": {
+          "products": {
+            "count": 19,
+            "sha256": "329303866db82f11080241d108915dd544a6851149471c16b44a419820e25b31"
+          },
+          "profiles": {
+            "count": 16,
+            "sha256": "5919f1150803e0c57894f0b861562be7073ca663c2b1610730d48aa217079750"
+          }
+        },
+        "artifact_name": "restore_mongo_8a35fae8d8d04d18bafdb0f017be145a.aesgcm",
+        "encrypted": "AES-256-GCM",
+        "consistent_snapshot": false,
+        "limitation": "Standalone: comparação antes/depois detecta alterações persistentes; mantenha escritas pausadas."
+      },
+      "duration_seconds": 0.4455,
+      "artifact": "evidencias/nosql/test_mongo_backup.json"
+    },
+    {
+      "id": "test_mongo_final",
+      "controls": [
+        "NOSQL-10"
+      ],
+      "objective": "test_mongo_final",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:42.618088+00:00",
+      "observed": {
+        "checklist": {
+          "test_mongo_admin_separation": "PASS",
+          "test_mongo_anonymous": "PASS",
+          "test_mongo_backup": "PASS",
+          "test_mongo_environment": "PASS",
+          "test_mongo_injection": "PASS",
+          "test_mongo_network": "PASS",
+          "test_mongo_rbac": "PASS",
+          "test_mongo_schema": "PASS",
+          "test_mongo_tls": "PASS"
+        },
+        "audit_limit": "Community server logs and API logs; no Enterprise audit"
+      },
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/nosql/test_mongo_final.json"
+    },
+    {
+      "id": "test_sql_environment",
+      "controls": [
+        "SQL-01"
+      ],
+      "objective": "test_sql_environment",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:42.670158+00:00",
+      "observed": {
+        "server_version": "17.6",
+        "persistent_tables": [
+          "lab.tenants",
+          "lab.customers",
+          "lab.orders"
+        ],
+        "unicode_data": "UTF-8 verified",
+        "profile": "Windows nativo / revisao Docker-macOS / bancos e HTTP reais / TLS verificado / Compose nao executado"
+      },
+      "duration_seconds": 0.0511,
+      "artifact": "evidencias/sql/test_sql_environment.json"
+    },
+    {
+      "id": "test_sql_roles",
+      "controls": [
+        "SQL-02"
+      ],
+      "objective": "test_sql_roles",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:42.743057+00:00",
+      "observed": {
+        "runtime_role": "api_user",
+        "attributes": {
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "rolreplication": false
+        },
+        "table_owner": "migration_owner",
+        "memberships": {
+          "read": true,
+          "write": true,
+          "migration": false
+        }
+      },
+      "duration_seconds": 0.0719,
+      "artifact": "evidencias/sql/test_sql_roles.json"
+    },
+    {
+      "id": "test_sql_privileges",
+      "controls": [
+        "SQL-03"
+      ],
+      "objective": "test_sql_privileges",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:42.996761+00:00",
+      "observed": {
+        "legitimate_select": "accepted",
+        "ddl": "denied",
+        "account_table": "denied",
+        "truncate": "denied",
+        "set_owner_role": "denied",
+        "auth_business_read": "denied"
+      },
+      "duration_seconds": 0.2519,
+      "artifact": "evidencias/sql/test_sql_privileges.json"
+    },
+    {
+      "id": "test_sql_authentication",
+      "controls": [
+        "SQL-04"
+      ],
+      "objective": "test_sql_authentication",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:43.136219+00:00",
+      "observed": {
+        "correct_credentials": "accepted",
+        "wrong_credentials": "denied",
+        "stored_verifier": "SCRAM-SHA-256",
+        "origin_limit": "Source 127.0.0.2 rejected by pg_hba over verified TLS (SQLSTATE 28000)."
+      },
+      "duration_seconds": 0.1392,
+      "artifact": "evidencias/sql/test_sql_authentication.json"
+    },
+    {
+      "id": "test_sql_tls",
+      "controls": [
+        "SQL-05"
+      ],
+      "objective": "test_sql_tls",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:43.239051+00:00",
+      "observed": {
+        "ssl": true,
+        "version": "TLSv1.3",
+        "cipher": "TLS_AES_256_GCM_SHA384",
+        "plaintext": "rejected",
+        "wrong_hostname": "rejected"
+      },
+      "duration_seconds": 0.101,
+      "artifact": "evidencias/sql/test_sql_tls.json"
+    },
+    {
+      "id": "test_sql_rls_direct",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "test_sql_rls_direct",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:43.450384+00:00",
+      "observed": {
+        "no_context_rows": 0,
+        "cross_select_rows": 0,
+        "cross_update_rows": 0,
+        "cross_insert": "RLS denied",
+        "tenant_B": "own rows visible"
+      },
+      "duration_seconds": 0.2105,
+      "artifact": "evidencias/sql/test_sql_rls_direct.json"
+    },
+    {
+      "id": "test_sql_context_reset",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "test_sql_context_reset",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:43.500297+00:00",
+      "observed": {
+        "reused_connection_after_commit": "zero visible rows; SET LOCAL reset"
+      },
+      "duration_seconds": 0.049,
+      "artifact": "evidencias/sql/test_sql_context_reset.json"
+    },
+    {
+      "id": "test_sql_injection",
+      "controls": [
+        "SQL-07"
+      ],
+      "objective": "test_sql_injection",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:43.860296+00:00",
+      "observed": {
+        "legitimate_search": "matches own customer",
+        "adversarial_string": "treated as data",
+        "adversarial_rows": 0,
+        "driver": "psycopg parameter binding with prepare=True"
+      },
+      "duration_seconds": 0.357,
+      "artifact": "evidencias/sql/test_sql_injection.json"
+    },
+    {
+      "id": "test_sql_audit",
+      "controls": [
+        "SQL-08"
+      ],
+      "objective": "test_sql_audit",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:45.634535+00:00",
+      "observed": {
+        "order_event": {
+          "entity_id": "85fa631e-76d5-4758-8ff0-a577c4c832a9",
+          "operation": "INSERT"
+        },
+        "database_logs": {
+          "connection": true,
+          "ddl": true,
+          "failed_auth": true
+        },
+        "export": "only event presence; raw lines excluded"
+      },
+      "duration_seconds": 1.7709,
+      "artifact": "evidencias/sql/test_sql_audit.json"
+    },
+    {
+      "id": "test_sql_backup",
+      "controls": [
+        "SQL-09"
+      ],
+      "objective": "test_sql_backup",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.732493+00:00",
+      "observed": {
+        "destination": "restore_pg_e5a6b1e1581e422c88eaa34eca56fb22",
+        "backup_seconds": 0.2543,
+        "restore_seconds": 0.835,
+        "source": {
+          "lab.tenants": {
+            "count": 2,
+            "sha256": "25cec9cd59e6d68ffd255e0a0f6251fa8087c84966d6407d35d75a2a8e70e058"
+          },
+          "lab.customers": {
+            "count": 3,
+            "sha256": "3c82b091d36f7443a9c46890a3fc223c4a844d6cdd1b7bb6d3d4f82c2e692fd3"
+          },
+          "lab.orders": {
+            "count": 18,
+            "sha256": "844676d6a566a5a09bfe2bd5c4686da8ca9962a33229db6c375a78e6cdfdf755"
+          }
+        },
+        "restored": {
+          "lab.tenants": {
+            "count": 2,
+            "sha256": "25cec9cd59e6d68ffd255e0a0f6251fa8087c84966d6407d35d75a2a8e70e058"
+          },
+          "lab.customers": {
+            "count": 3,
+            "sha256": "3c82b091d36f7443a9c46890a3fc223c4a844d6cdd1b7bb6d3d4f82c2e692fd3"
+          },
+          "lab.orders": {
+            "count": 18,
+            "sha256": "844676d6a566a5a09bfe2bd5c4686da8ca9962a33229db6c375a78e6cdfdf755"
+          }
+        },
+        "artifact_name": "restore_pg_e5a6b1e1581e422c88eaa34eca56fb22.aesgcm",
+        "encrypted": "AES-256-GCM",
+        "consistent_snapshot": true
+      },
+      "duration_seconds": 1.096,
+      "artifact": "evidencias/sql/test_sql_backup.json"
+    },
+    {
+      "id": "test_sql_final",
+      "controls": [
+        "SQL-10"
+      ],
+      "objective": "test_sql_final",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.733494+00:00",
+      "observed": {
+        "checklist": {
+          "test_sql_audit": "PASS",
+          "test_sql_authentication": "PASS",
+          "test_sql_backup": "PASS",
+          "test_sql_context_reset": "PASS",
+          "test_sql_environment": "PASS",
+          "test_sql_injection": "PASS",
+          "test_sql_privileges": "PASS",
+          "test_sql_rls_direct": "PASS",
+          "test_sql_roles": "PASS",
+          "test_sql_tls": "PASS"
+        },
+        "risks": "docs/riscos_residuais.md",
+        "limit": "Native execution does not certify Docker networking"
+      },
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/sql/test_sql_final.json"
+    },
+    {
+      "id": "test_payloads_reject_mass_assignment",
+      "controls": [],
+      "objective": "test_payloads_reject_mass_assignment",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.734494+00:00",
+      "observed": {
+        "extra_tenant": "rejected",
+        "operator_object": "rejected",
+        "real_email_domain": "rejected"
+      },
+      "duration_seconds": 0.0002,
+      "artifact": "evidencias/app/test_payloads_reject_mass_assignment.json"
+    },
+    {
+      "id": "test_filters_reject_operators_and_escape_regex",
+      "controls": [],
+      "objective": "test_filters_reject_operators_and_escape_regex",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.735619+00:00",
+      "observed": {
+        "regex": "escaped",
+        "tenant": "server-side"
+      },
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_filters_reject_operators_and_escape_regex.json"
+    },
+    {
+      "id": "test_unsafe_origin_denied_before_database",
+      "controls": [],
+      "objective": "test_unsafe_origin_denied_before_database",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.741617+00:00",
+      "observed": {
+        "untrusted_origin": 403,
+        "missing_origin": 403
+      },
+      "duration_seconds": 0.0032,
+      "artifact": "evidencias/app/test_unsafe_origin_denied_before_database.json"
+    },
+    {
+      "id": "test_controls_require_complete_evidence",
+      "controls": [],
+      "objective": "test_controls_require_complete_evidence",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.746124+00:00",
+      "observed": {
+        "empty": "20 pending",
+        "skip": "remains pending"
+      },
+      "duration_seconds": 0.002,
+      "artifact": "evidencias/app/test_controls_require_complete_evidence.json"
+    },
+    {
+      "id": "test_restore_guard_refuses_source",
+      "controls": [],
+      "objective": "test_restore_guard_refuses_source",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:46.748126+00:00",
+      "observed": {
+        "source_overwrite": "refused"
+      },
+      "duration_seconds": 0.0002,
+      "artifact": "evidencias/app/test_restore_guard_refuses_source.json"
+    },
+    {
+      "id": "test_certificates_and_encrypted_backup",
+      "controls": [],
+      "objective": "test_certificates_and_encrypted_backup",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:12:47.292158+00:00",
+      "observed": {
+        "certificate_san": "postgres,localhost,127.0.0.1",
+        "idempotency": "preserved",
+        "encryption": "AES-256-GCM round trip"
+      },
+      "duration_seconds": 0.5424,
+      "artifact": "evidencias/app/test_certificates_and_encrypted_backup.json"
+    }
+  ]
+}

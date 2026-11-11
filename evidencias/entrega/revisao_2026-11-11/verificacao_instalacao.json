@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-11-11T18:35:55.352661+00:00",
+  "profile": "Windows nativo / Documents SecureDB-Lab / atalho e HTTP reais / TLS verificado / Compose não executado",
+  "pytest": {
+    "PASS": 39,
+    "FAIL": 0,
+    "SKIP": 0
+  },
+  "frontend": {
+    "PASS": 5,
+    "build": "PASS"
+  },
+  "canonical_root": "C:\\Users\\Guilherme\\Documents\\SecureDB-Lab",
+  "shortcut": "C:\\Users\\Guilherme\\Desktop\\SecureDB Lab.lnk",
+  "desktop_entrypoint": "scripts/desktop.py",
+  "python_prefix": "C:\\Users\\Guilherme\\Documents\\SecureDB-Lab\\.venv",
+  "tools": [
+    ".local/tools/postgres",
+    ".local/tools/mongodb",
+    ".local/tools/mongodb-tools"
+  ],
+  "references": ".local/referencias",
+  "docker_runtime": "NOT_EXECUTED; engine unavailable"
+}

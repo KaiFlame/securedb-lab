@@ -1,0 +1,17 @@
+{
+  "id": "test_sql_authentication",
+  "controls": [
+    "SQL-04"
+  ],
+  "objective": "test_sql_authentication",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:04.731100+00:00",
+  "observed": {
+    "correct_credentials": "accepted",
+    "wrong_credentials": "denied",
+    "stored_verifier": "SCRAM-SHA-256",
+    "origin_limit": "Source 127.0.0.2 rejected by pg_hba over verified TLS (SQLSTATE 28000)."
+  },
+  "duration_seconds": 0.1421,
+  "artifact": "evidencias/sql/test_sql_authentication.json"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "test_control_details_have_real_source_and_specific_scenarios",
+  "controls": [],
+  "objective": "test_control_details_have_real_source_and_specific_scenarios",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.649126+00:00",
+  "observed": {
+    "controls": 20,
+    "source_excerpts": "match versioned files",
+    "scenarios": "specific; positive and negative"
+  },
+  "duration_seconds": 0.0014,
+  "artifact": "evidencias/app/test_control_details_have_real_source_and_specific_scenarios.json"
+}

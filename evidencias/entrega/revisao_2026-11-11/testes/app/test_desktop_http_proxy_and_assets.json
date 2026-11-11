@@ -1,0 +1,21 @@
+{
+  "id": "test_desktop_http_proxy_and_assets",
+  "controls": [],
+  "objective": "test_desktop_http_proxy_and_assets",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.117600+00:00",
+  "observed": {
+    "actual_origin": "http://127.0.0.1:5173",
+    "health": 200,
+    "javascript_asset": "correct MIME",
+    "authentication": "real login/logout through proxy",
+    "untrusted_origin": 403,
+    "private_file": 404,
+    "directory_listing": 403,
+    "profile_search": 200,
+    "evidence_export": 200,
+    "control_details": 20
+  },
+  "duration_seconds": 1.0254,
+  "artifact": "evidencias/app/test_desktop_http_proxy_and_assets.json"
+}

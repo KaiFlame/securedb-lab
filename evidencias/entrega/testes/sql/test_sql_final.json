@@ -1,0 +1,27 @@
+{
+  "id": "test_sql_final",
+  "controls": [
+    "SQL-10"
+  ],
+  "objective": "test_sql_final",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:07.672360+00:00",
+  "observed": {
+    "checklist": {
+      "test_sql_audit": "PASS",
+      "test_sql_authentication": "PASS",
+      "test_sql_backup": "PASS",
+      "test_sql_context_reset": "PASS",
+      "test_sql_environment": "PASS",
+      "test_sql_injection": "PASS",
+      "test_sql_privileges": "PASS",
+      "test_sql_rls_direct": "PASS",
+      "test_sql_roles": "PASS",
+      "test_sql_tls": "PASS"
+    },
+    "risks": "docs/riscos_residuais.md",
+    "limit": "Native execution does not certify Docker networking"
+  },
+  "duration_seconds": 0.0002,
+  "artifact": "evidencias/sql/test_sql_final.json"
+}

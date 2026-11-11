@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["integration: requires the isolated laboratory databases", "controls(*ids): traceability identifiers"]
+addopts = "-ra --strict-markers"

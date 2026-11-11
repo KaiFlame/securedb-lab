@@ -1,0 +1,232 @@
+{
+  "timestamp": "2026-11-11T19:16:12.984496+00:00",
+  "environment": "unitário local; integração não executada",
+  "exit_code": 0,
+  "tests": [
+    {
+      "id": "test_setup_preserves_credentials_certificates_and_port",
+      "controls": [],
+      "objective": "test_setup_preserves_credentials_certificates_and_port",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.399842+00:00",
+      "observed": {
+        "setup": "idempotent",
+        "port": "preserved from .env",
+        "credentials": "local and stable"
+      },
+      "duration_seconds": 0.4516,
+      "artifact": "evidencias/app/test_setup_preserves_credentials_certificates_and_port.json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[0]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[0]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.401842+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[0].json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[1023]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[1023]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.404187+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[1023].json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[65536]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[65536]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.405694+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[65536].json"
+    },
+    {
+      "id": "test_setup_rejects_invalid_port[invalid]",
+      "controls": [],
+      "objective": "test_setup_rejects_invalid_port[invalid]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.407698+00:00",
+      "observed": {},
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_setup_rejects_invalid_port[invalid].json"
+    },
+    {
+      "id": "test_environment_inspection_rejects_unsafe_topology",
+      "controls": [],
+      "objective": "test_environment_inspection_rejects_unsafe_topology",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.409698+00:00",
+      "observed": {},
+      "duration_seconds": 0.0008,
+      "artifact": "evidencias/app/test_environment_inspection_rejects_unsafe_topology.json"
+    },
+    {
+      "id": "test_build_contexts_exclude_host_dependencies_and_private_data",
+      "controls": [],
+      "objective": "test_build_contexts_exclude_host_dependencies_and_private_data",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.411142+00:00",
+      "observed": {},
+      "duration_seconds": 0.0005,
+      "artifact": "evidencias/app/test_build_contexts_exclude_host_dependencies_and_private_data.json"
+    },
+    {
+      "id": "test_environment_export_and_profile_scope",
+      "controls": [],
+      "objective": "test_environment_export_and_profile_scope",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.621955+00:00",
+      "observed": {
+        "environment_receipt": "included in Docker export; excluded from native result"
+      },
+      "duration_seconds": 0.2102,
+      "artifact": "evidencias/app/test_environment_export_and_profile_scope.json"
+    },
+    {
+      "id": "test_control_details_have_real_source_and_specific_scenarios",
+      "controls": [],
+      "objective": "test_control_details_have_real_source_and_specific_scenarios",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.624462+00:00",
+      "observed": {
+        "controls": 20,
+        "source_excerpts": "match versioned files",
+        "scenarios": "specific; positive and negative"
+      },
+      "duration_seconds": 0.0015,
+      "artifact": "evidencias/app/test_control_details_have_real_source_and_specific_scenarios.json"
+    },
+    {
+      "id": "test_desktop_paths_and_cleanup_stay_inside_project",
+      "controls": [],
+      "objective": "test_desktop_paths_and_cleanup_stay_inside_project",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.638705+00:00",
+      "observed": {
+        "paths": "project-relative",
+        "traversal": "denied",
+        "database_cleanup": "not selected"
+      },
+      "duration_seconds": 0.0118,
+      "artifact": "evidencias/app/test_desktop_paths_and_cleanup_stay_inside_project.json"
+    },
+    {
+      "id": "test_desktop_restart_clears_old_stop_before_gui",
+      "controls": [],
+      "objective": "test_desktop_restart_clears_old_stop_before_gui",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.644704+00:00",
+      "observed": {
+        "previous_stop_marker": "cleared before GUI polling"
+      },
+      "duration_seconds": 0.0028,
+      "artifact": "evidencias/app/test_desktop_restart_clears_old_stop_before_gui.json"
+    },
+    {
+      "id": "test_docker_report_does_not_claim_windows_execution[False]",
+      "controls": [],
+      "objective": "test_docker_report_does_not_claim_windows_execution[False]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.668549+00:00",
+      "observed": {},
+      "duration_seconds": 0.0213,
+      "artifact": "evidencias/app/test_docker_report_does_not_claim_windows_execution[False].json"
+    },
+    {
+      "id": "test_docker_report_does_not_claim_windows_execution[True]",
+      "controls": [],
+      "objective": "test_docker_report_does_not_claim_windows_execution[True]",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.675053+00:00",
+      "observed": {},
+      "duration_seconds": 0.0046,
+      "artifact": "evidencias/app/test_docker_report_does_not_claim_windows_execution[True].json"
+    },
+    {
+      "id": "test_payloads_reject_mass_assignment",
+      "controls": [],
+      "objective": "test_payloads_reject_mass_assignment",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.676056+00:00",
+      "observed": {
+        "extra_tenant": "rejected",
+        "operator_object": "rejected",
+        "real_email_domain": "rejected"
+      },
+      "duration_seconds": 0.0002,
+      "artifact": "evidencias/app/test_payloads_reject_mass_assignment.json"
+    },
+    {
+      "id": "test_filters_reject_operators_and_escape_regex",
+      "controls": [],
+      "objective": "test_filters_reject_operators_and_escape_regex",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.677054+00:00",
+      "observed": {
+        "regex": "escaped",
+        "tenant": "server-side"
+      },
+      "duration_seconds": 0.0001,
+      "artifact": "evidencias/app/test_filters_reject_operators_and_escape_regex.json"
+    },
+    {
+      "id": "test_unsafe_origin_denied_before_database",
+      "controls": [],
+      "objective": "test_unsafe_origin_denied_before_database",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.695103+00:00",
+      "observed": {
+        "untrusted_origin": 403,
+        "missing_origin": 403
+      },
+      "duration_seconds": 0.0033,
+      "artifact": "evidencias/app/test_unsafe_origin_denied_before_database.json"
+    },
+    {
+      "id": "test_controls_require_complete_evidence",
+      "controls": [],
+      "objective": "test_controls_require_complete_evidence",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.700104+00:00",
+      "observed": {
+        "empty": "20 pending",
+        "skip": "remains pending"
+      },
+      "duration_seconds": 0.0018,
+      "artifact": "evidencias/app/test_controls_require_complete_evidence.json"
+    },
+    {
+      "id": "test_restore_guard_refuses_source",
+      "controls": [],
+      "objective": "test_restore_guard_refuses_source",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.702105+00:00",
+      "observed": {
+        "source_overwrite": "refused"
+      },
+      "duration_seconds": 0.0015,
+      "artifact": "evidencias/app/test_restore_guard_refuses_source.json"
+    },
+    {
+      "id": "test_certificates_and_encrypted_backup",
+      "controls": [],
+      "objective": "test_certificates_and_encrypted_backup",
+      "result": "PASS",
+      "timestamp": "2026-11-11T19:16:12.983494+00:00",
+      "observed": {
+        "certificate_san": "postgres,localhost,127.0.0.1",
+        "idempotency": "preserved",
+        "encryption": "AES-256-GCM round trip"
+      },
+      "duration_seconds": 0.2783,
+      "artifact": "evidencias/app/test_certificates_and_encrypted_backup.json"
+    }
+  ]
+}

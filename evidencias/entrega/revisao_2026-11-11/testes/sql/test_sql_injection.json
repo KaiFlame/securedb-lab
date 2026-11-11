@@ -1,0 +1,17 @@
+{
+  "id": "test_sql_injection",
+  "controls": [
+    "SQL-07"
+  ],
+  "objective": "test_sql_injection",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:30.494247+00:00",
+  "observed": {
+    "legitimate_search": "matches own customer",
+    "adversarial_string": "treated as data",
+    "adversarial_rows": 0,
+    "driver": "psycopg parameter binding with prepare=True"
+  },
+  "duration_seconds": 0.3751,
+  "artifact": "evidencias/sql/test_sql_injection.json"
+}

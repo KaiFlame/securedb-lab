@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-11-11T17:21:36.652Z",
+  "viewports": [
+    {
+      "documentWidth": 756,
+      "height": 5564,
+      "title": "Documentação · SecureDB Lab",
+      "width": 768,
+      "horizontalOverflow": false
+    },
+    {
+      "documentWidth": 1428,
+      "height": 1858,
+      "title": "Visão geral · SecureDB Lab",
+      "width": 1440,
+      "horizontalOverflow": false
+    },
+    {
+      "documentWidth": 2548,
+      "height": 1946,
+      "title": "Visão geral · SecureDB Lab",
+      "width": 2560,
+      "horizontalOverflow": false
+    },
+    {
+      "documentWidth": 308,
+      "height": 2714,
+      "title": "Visão geral · SecureDB Lab",
+      "width": 320,
+      "horizontalOverflow": false
+    },
+    {
+      "documentWidth": 308,
+      "height": 998,
+      "title": "Controles e evidências · SecureDB Lab",
+      "width": 320,
+      "horizontalOverflow": false
+    }
+  ],
+  "contrastSample": {
+    "candidates": [],
+    "page": "Visão geral · SecureDB Lab",
+    "width": 320
+  },
+  "observedFlows": [
+    "login A/B/leitor",
+    "pedidos de B distintos dos de A",
+    "novo pedido e aprovação via UI",
+    "novo produto persistido no MongoDB",
+    "botão de escrita desabilitado para leitor",
+    "filtro retorna três controles pendentes",
+    "dez enunciados renderizados",
+    "Escape fecha diálogo de evidência"
+  ],
+  "limitations": [
+    "Amostra de contraste DOM não é auditoria WCAG completa",
+    "Execução de UI usa bancos nativos reais, não Compose"
+  ]
+}

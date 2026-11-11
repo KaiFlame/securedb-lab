@@ -1,0 +1,17 @@
+{
+  "id": "test_api_viewer_and_csrf",
+  "controls": [
+    "SQL-03",
+    "NOSQL-04"
+  ],
+  "objective": "test_api_viewer_and_csrf",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:18:58.740779+00:00",
+  "observed": {
+    "viewer_read": 200,
+    "viewer_write": 403,
+    "invalid_csrf": 403
+  },
+  "duration_seconds": 0.548,
+  "artifact": "evidencias/sql/test_api_viewer_and_csrf.json"
+}

@@ -1,0 +1,8 @@
+{
+  "scope": "Frontend unit tests, controlled responses; does not validate database controls",
+  "tests": 5,
+  "result": "PASS",
+  "typescript": "PASS",
+  "vite_build": "PASS",
+  "date": "2026-11-11"
+}

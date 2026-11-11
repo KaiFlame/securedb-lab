@@ -1,0 +1,25 @@
+@layer components {
+ progress.track{display:block;width:160px;max-width:100%;appearance:none;border:0;border-radius:0;}
+ progress.track::-webkit-progress-bar{background:#e6e3dd;}
+ progress.track::-webkit-progress-value{background:#b43f32;}
+ progress.track::-moz-progress-bar{background:#b43f32;}
+ .table-wrap th{position:relative;}
+ .recent-events{margin-top:36px;}
+ .breadcrumb span,.metrics strong small { color:#6c6e66; }
+ .control-strip button { color:#67665f; }
+ .evidence-band p { color:#646358; }
+ .sidebar-label { color:#676860; }
+ .sidebar-bottom p { color:#686a61; }
+ .sidebar nav a small { opacity:1;color:#6d6e66; }
+ .step-number { color:#98533d; }
+ .lab-roadmap code { color:#795c48; }
+ .story-footer { color:#62645c; }
+ .evidence-band { flex-wrap:wrap; }
+ .evidence-band>div { flex:1 1 260px;min-width:0; }
+}
+@layer responsive {
+ @media(max-width:700px){
+  .evidence-band>div{flex:1 1 200px;}
+  .evidence-band>a{margin-left:37px;}
+ }
+}

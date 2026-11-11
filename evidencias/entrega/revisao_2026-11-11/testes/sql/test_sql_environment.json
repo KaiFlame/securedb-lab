@@ -1,0 +1,21 @@
+{
+  "id": "test_sql_environment",
+  "controls": [
+    "SQL-01"
+  ],
+  "objective": "test_sql_environment",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:29.282945+00:00",
+  "observed": {
+    "server_version": "17.6",
+    "persistent_tables": [
+      "lab.tenants",
+      "lab.customers",
+      "lab.orders"
+    ],
+    "unicode_data": "UTF-8 verified",
+    "profile": "Windows nativo / Documents SecureDB-Lab / atalho e HTTP reais / TLS verificado / Compose não executado"
+  },
+  "duration_seconds": 0.0468,
+  "artifact": "evidencias/sql/test_sql_environment.json"
+}

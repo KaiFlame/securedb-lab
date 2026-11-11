@@ -1,0 +1,16 @@
+{
+  "id": "test_mongo_injection",
+  "controls": [
+    "NOSQL-08"
+  ],
+  "objective": "test_mongo_injection",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:28.804756+00:00",
+  "observed": {
+    "operator_object": 422,
+    "where": 422,
+    "regex_metacharacters": "literal, zero results"
+  },
+  "duration_seconds": 0.3857,
+  "artifact": "evidencias/nosql/test_mongo_injection.json"
+}

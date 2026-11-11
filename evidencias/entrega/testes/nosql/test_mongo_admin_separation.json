@@ -1,0 +1,20 @@
+{
+  "id": "test_mongo_admin_separation",
+  "controls": [
+    "NOSQL-02"
+  ],
+  "objective": "test_mongo_admin_separation",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:00.126177+00:00",
+  "observed": {
+    "runtime_identity": [
+      {
+        "user": "api_user",
+        "db": "lab"
+      }
+    ],
+    "admin_separate": true
+  },
+  "duration_seconds": 0.0625,
+  "artifact": "evidencias/nosql/test_mongo_admin_separation.json"
+}

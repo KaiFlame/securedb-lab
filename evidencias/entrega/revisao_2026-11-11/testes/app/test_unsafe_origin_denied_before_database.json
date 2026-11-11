@@ -1,0 +1,13 @@
+{
+  "id": "test_unsafe_origin_denied_before_database",
+  "controls": [],
+  "objective": "test_unsafe_origin_denied_before_database",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:32.895245+00:00",
+  "observed": {
+    "untrusted_origin": 403,
+    "missing_origin": 403
+  },
+  "duration_seconds": 0.0023,
+  "artifact": "evidencias/app/test_unsafe_origin_denied_before_database.json"
+}

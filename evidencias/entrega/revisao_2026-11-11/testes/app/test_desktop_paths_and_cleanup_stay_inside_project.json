@@ -1,0 +1,14 @@
+{
+  "id": "test_desktop_paths_and_cleanup_stay_inside_project",
+  "controls": [],
+  "objective": "test_desktop_paths_and_cleanup_stay_inside_project",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:24.654637+00:00",
+  "observed": {
+    "paths": "project-relative",
+    "traversal": "denied",
+    "database_cleanup": "not selected"
+  },
+  "duration_seconds": 0.004,
+  "artifact": "evidencias/app/test_desktop_paths_and_cleanup_stay_inside_project.json"
+}

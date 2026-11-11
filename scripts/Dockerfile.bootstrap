@@ -1,0 +1,7 @@
+FROM python:3.12.12-slim-bookworm
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 LAB_PROJECT_ROOT=/workspace
+RUN pip install --no-cache-dir cryptography==50.0.2
+WORKDIR /bootstrap
+COPY scripts/lab.py scripts/certificates.py scripts/bootstrap.py ./
+ENTRYPOINT ["python", "/bootstrap/bootstrap.py"]
+CMD ["setup"]

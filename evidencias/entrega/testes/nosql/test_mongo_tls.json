@@ -1,0 +1,17 @@
+{
+  "id": "test_mongo_tls",
+  "controls": [
+    "NOSQL-06"
+  ],
+  "objective": "test_mongo_tls",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:03.454979+00:00",
+  "observed": {
+    "verified_connection": "TLSv1.2",
+    "plaintext": "rejected",
+    "untrusted_ca": "rejected",
+    "wrong_hostname": "rejected"
+  },
+  "duration_seconds": 3.2255,
+  "artifact": "evidencias/nosql/test_mongo_tls.json"
+}

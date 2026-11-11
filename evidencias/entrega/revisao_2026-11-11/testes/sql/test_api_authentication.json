@@ -1,0 +1,18 @@
+{
+  "id": "test_api_authentication",
+  "controls": [
+    "SQL-04",
+    "NOSQL-03"
+  ],
+  "objective": "Login aceito/negado, sessão invalidada e endpoint sem identidade.",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:19.970950+00:00",
+  "observed": {
+    "unauthenticated": 401,
+    "bad_password": 401,
+    "valid_login": 200,
+    "logout": "invalidates session"
+  },
+  "duration_seconds": 0.3562,
+  "artifact": "evidencias/sql/test_api_authentication.json"
+}

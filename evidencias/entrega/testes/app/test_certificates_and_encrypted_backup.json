@@ -1,0 +1,14 @@
+{
+  "id": "test_certificates_and_encrypted_backup",
+  "controls": [],
+  "objective": "test_certificates_and_encrypted_backup",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:08.158970+00:00",
+  "observed": {
+    "certificate_san": "postgres,localhost,127.0.0.1",
+    "idempotency": "preserved",
+    "encryption": "AES-256-GCM round trip"
+  },
+  "duration_seconds": 0.4539,
+  "artifact": "evidencias/app/test_certificates_and_encrypted_backup.json"
+}

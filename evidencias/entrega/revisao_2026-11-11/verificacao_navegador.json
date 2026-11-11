@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-11-11T18:29:58.491Z",
+  "runtime": "Documents/SecureDB-Lab; build estático servido pelo inicializador desktop",
+  "profileSearch": "Horizonte + Corporativo retorna Contato Horizonte",
+  "controlDetails": [
+    "Objetivo",
+    "Configuração consultada",
+    "Cenário positivo",
+    "Cenário negativo",
+    "Testes e observações",
+    "Risco residual"
+  ],
+  "progress": {
+    "max": "20",
+    "value": "17"
+  },
+  "origin": "http://127.0.0.1:5173",
+  "scope": "Conferência funcional no navegador; não constitui auditoria WCAG completa."
+}

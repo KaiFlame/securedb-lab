@@ -1,0 +1,40 @@
+{
+  "id": "test_mongo_backup",
+  "controls": [
+    "NOSQL-09"
+  ],
+  "objective": "test_mongo_backup",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:29.233864+00:00",
+  "observed": {
+    "destination": "restore_mongo_c5f432aabd984c7f93203aba38dad0ab",
+    "backup_seconds": 0.0796,
+    "restore_seconds": 0.2334,
+    "source": {
+      "products": {
+        "count": 17,
+        "sha256": "61d0d37b50992bc2baf09b9cf213f7a361d4a0707117f2cbcd43d11c72765caa"
+      },
+      "profiles": {
+        "count": 14,
+        "sha256": "2ce1614d5d0431d54a2ca1d3b1638ab2cd3f310fbbe936a8c15ebc364ac1e375"
+      }
+    },
+    "restored": {
+      "products": {
+        "count": 17,
+        "sha256": "61d0d37b50992bc2baf09b9cf213f7a361d4a0707117f2cbcd43d11c72765caa"
+      },
+      "profiles": {
+        "count": 14,
+        "sha256": "2ce1614d5d0431d54a2ca1d3b1638ab2cd3f310fbbe936a8c15ebc364ac1e375"
+      }
+    },
+    "artifact_name": "restore_mongo_c5f432aabd984c7f93203aba38dad0ab.aesgcm",
+    "encrypted": "AES-256-GCM",
+    "consistent_snapshot": false,
+    "limitation": "Standalone: comparação antes/depois detecta alterações persistentes; mantenha escritas pausadas."
+  },
+  "duration_seconds": 0.4269,
+  "artifact": "evidencias/nosql/test_mongo_backup.json"
+}

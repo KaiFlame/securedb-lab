@@ -1,0 +1,27 @@
+{
+  "id": "test_sql_roles",
+  "controls": [
+    "SQL-02"
+  ],
+  "objective": "test_sql_roles",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:04.347651+00:00",
+  "observed": {
+    "runtime_role": "api_user",
+    "attributes": {
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false,
+      "rolreplication": false
+    },
+    "table_owner": "migration_owner",
+    "memberships": {
+      "read": true,
+      "write": true,
+      "migration": false
+    }
+  },
+  "duration_seconds": 0.05,
+  "artifact": "evidencias/sql/test_sql_roles.json"
+}

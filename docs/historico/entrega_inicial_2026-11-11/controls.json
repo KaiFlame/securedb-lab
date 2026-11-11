@@ -1,0 +1,395 @@
+[
+  {
+    "id": "SQL-01",
+    "lab": "SQL",
+    "step": 1,
+    "title": "Ambiente isolado",
+    "category": "Infraestrutura",
+    "criticality": "Alta",
+    "risk": "Exposição e perda de dados",
+    "files": [
+      "docker-compose.yml"
+    ],
+    "required_tests": [
+      "test_sql_environment",
+      "ENV-01"
+    ],
+    "residual": "Host Docker e volume continuam no mesmo domínio de falha.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-02",
+    "lab": "SQL",
+    "step": 2,
+    "title": "Roles segregadas",
+    "category": "Identidade",
+    "criticality": "Crítica",
+    "risk": "Comprometimento com poder de DBA",
+    "files": [
+      "sql/roles_grants.sql"
+    ],
+    "required_tests": [
+      "test_sql_roles"
+    ],
+    "residual": "Administrador e operador de migrations mantêm poder elevado.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-03",
+    "lab": "SQL",
+    "step": 3,
+    "title": "Menor privilégio",
+    "category": "Autorização",
+    "criticality": "Crítica",
+    "risk": "DDL e leitura de credenciais pela API",
+    "files": [
+      "sql/schema.sql"
+    ],
+    "required_tests": [
+      "test_sql_privileges"
+    ],
+    "residual": "A conta de negócio acessa ambos os tenants sob contexto confiável.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-04",
+    "lab": "SQL",
+    "step": 4,
+    "title": "SCRAM e origem",
+    "category": "Identidade",
+    "criticality": "Alta",
+    "risk": "Acesso indevido ao banco",
+    "files": [
+      "config/pg_hba.conf"
+    ],
+    "required_tests": [
+      "test_sql_authentication"
+    ],
+    "residual": "SCRAM não substitui proteção do segredo e do host.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-05",
+    "lab": "SQL",
+    "step": 5,
+    "title": "TLS verify-full",
+    "category": "Criptografia",
+    "criticality": "Alta",
+    "risk": "Interceptação do canal",
+    "files": [
+      "config/postgresql.conf"
+    ],
+    "required_tests": [
+      "test_sql_tls"
+    ],
+    "residual": "CA didática local; não certifica identidade pública.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-06",
+    "lab": "SQL",
+    "step": 6,
+    "title": "Isolamento por RLS",
+    "category": "Autorização",
+    "criticality": "Crítica",
+    "risk": "Leitura e escrita entre empresas",
+    "files": [
+      "sql/rls.sql"
+    ],
+    "required_tests": [
+      "test_sql_rls_direct",
+      "test_api_tenant_access",
+      "test_api_write_scope",
+      "test_sql_context_reset"
+    ],
+    "residual": "GUC de tenant é confiada ao backend; injeção arbitrária ou API comprometida pode alterá-la.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-07",
+    "lab": "SQL",
+    "step": 7,
+    "title": "Consultas parametrizadas",
+    "category": "AppSec",
+    "criticality": "Crítica",
+    "risk": "SQL injection",
+    "files": [
+      "api/routes.py"
+    ],
+    "required_tests": [
+      "test_sql_injection",
+      "test_api_validation"
+    ],
+    "residual": "Parametrização não decide autorização ou regras de negócio.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-08",
+    "lab": "SQL",
+    "step": 8,
+    "title": "Trilha de auditoria",
+    "category": "Observabilidade",
+    "criticality": "Alta",
+    "risk": "Ações sem rastreabilidade",
+    "files": [
+      "api/audit.py",
+      "sql/schema.sql",
+      "config/postgresql.conf"
+    ],
+    "required_tests": [
+      "test_sql_audit"
+    ],
+    "residual": "Admin pode alterar logs; não há SIEM nem trilha imutável.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-09",
+    "lab": "SQL",
+    "step": 9,
+    "title": "Backup e restauração",
+    "category": "Continuidade",
+    "criticality": "Alta",
+    "risk": "Perda irreversível de dados",
+    "files": [
+      "scripts/backup_restore.py"
+    ],
+    "required_tests": [
+      "test_sql_backup"
+    ],
+    "residual": "Sem agenda, offsite, HA ou PITR; chave guardada no mesmo host.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "SQL-10",
+    "lab": "SQL",
+    "step": 10,
+    "title": "Checklist e testes finais",
+    "category": "Qualidade",
+    "criticality": "Alta",
+    "risk": "Falsa sensação de proteção",
+    "files": [
+      "tests/test_sql.py",
+      "tests/test_api.py"
+    ],
+    "required_tests": [
+      "test_sql_final"
+    ],
+    "residual": "Testes limitados aos cenários e versões registrados.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-01",
+    "lab": "NOSQL",
+    "step": 1,
+    "title": "Ambiente isolado",
+    "category": "Infraestrutura",
+    "criticality": "Alta",
+    "risk": "Exposição e perda de documentos",
+    "files": [
+      "docker-compose.yml"
+    ],
+    "required_tests": [
+      "test_mongo_environment",
+      "ENV-01"
+    ],
+    "residual": "Host e volume único permanecem pontos de falha.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-02",
+    "lab": "NOSQL",
+    "step": 2,
+    "title": "Administrador separado",
+    "category": "Identidade",
+    "criticality": "Crítica",
+    "risk": "Uso de root no runtime",
+    "files": [
+      "nosql/users_roles.js"
+    ],
+    "required_tests": [
+      "test_mongo_admin_separation"
+    ],
+    "residual": "Root é necessário para bootstrap e restauração didática.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-03",
+    "lab": "NOSQL",
+    "step": 3,
+    "title": "Autenticação obrigatória",
+    "category": "Identidade",
+    "criticality": "Crítica",
+    "risk": "Acesso anônimo aos documentos",
+    "files": [
+      "config/mongod.conf"
+    ],
+    "required_tests": [
+      "test_mongo_anonymous"
+    ],
+    "residual": "Ping pode ser anônimo; operação de dados deve ser negada.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-04",
+    "lab": "NOSQL",
+    "step": 4,
+    "title": "RBAC por coleção",
+    "category": "Autorização",
+    "criticality": "Crítica",
+    "risk": "Criação de usuários ou desvio de schema",
+    "files": [
+      "nosql/users_roles.js"
+    ],
+    "required_tests": [
+      "test_mongo_rbac"
+    ],
+    "residual": "Isolamento por empresa é da API; MongoDB não implementa RLS aqui.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-05",
+    "lab": "NOSQL",
+    "step": 5,
+    "title": "Rede restrita",
+    "category": "Infraestrutura",
+    "criticality": "Alta",
+    "risk": "Alcance público da porta",
+    "files": [
+      "docker-compose.yml",
+      "config/mongod.conf"
+    ],
+    "required_tests": [
+      "test_mongo_network",
+      "ENV-01"
+    ],
+    "residual": "0.0.0.0 no contêiner depende de rede isolada e ausência de publicação.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-06",
+    "lab": "NOSQL",
+    "step": 6,
+    "title": "TLS obrigatório",
+    "category": "Criptografia",
+    "criticality": "Alta",
+    "risk": "Canal sem verificação",
+    "files": [
+      "config/mongod.conf"
+    ],
+    "required_tests": [
+      "test_mongo_tls"
+    ],
+    "residual": "TLS do banco não protege navegador HTTP local.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-07",
+    "lab": "NOSQL",
+    "step": 7,
+    "title": "Schema no SGBD",
+    "category": "Integridade",
+    "criticality": "Alta",
+    "risk": "Documentos inconsistentes",
+    "files": [
+      "nosql/schema_validation.js",
+      "nosql/schemas.json"
+    ],
+    "required_tests": [
+      "test_mongo_schema"
+    ],
+    "residual": "Validação sintática não comprova veracidade dos dados.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-08",
+    "lab": "NOSQL",
+    "step": 8,
+    "title": "Filtros tipados",
+    "category": "AppSec",
+    "criticality": "Crítica",
+    "risk": "Ampliação de consulta com operadores",
+    "files": [
+      "api/models.py",
+      "api/db.py"
+    ],
+    "required_tests": [
+      "test_mongo_injection"
+    ],
+    "residual": "Filtros internos ainda precisam de revisão de autorização.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-09",
+    "lab": "NOSQL",
+    "step": 9,
+    "title": "Backup e restauração",
+    "category": "Continuidade",
+    "criticality": "Alta",
+    "risk": "Perda de coleções",
+    "files": [
+      "scripts/backup_restore.py"
+    ],
+    "required_tests": [
+      "test_mongo_backup"
+    ],
+    "residual": "Standalone não oferece snapshot consistente multi-documento; pausar escritas.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  },
+  {
+    "id": "NOSQL-10",
+    "lab": "NOSQL",
+    "step": 10,
+    "title": "Checklist e testes finais",
+    "category": "Qualidade",
+    "criticality": "Alta",
+    "risk": "Controle declarado sem prova",
+    "files": [
+      "tests/test_mongo.py"
+    ],
+    "required_tests": [
+      "test_mongo_final"
+    ],
+    "residual": "Community sem auditoria Enterprise; suíte não é auditoria formal.",
+    "implemented": true,
+    "positive": "Operação legítima aceita e estado/configuração observado no serviço real.",
+    "negative": "Tentativa adversarial inofensiva bloqueada ou condição de falha explicitamente verificada."
+  }
+]

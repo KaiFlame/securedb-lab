@@ -1,0 +1,18 @@
+{
+  "id": "test_api_write_scope",
+  "controls": [
+    "SQL-06"
+  ],
+  "objective": "SELECT/INSERT/UPDATE entre empresas e operação legítima na A.",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:18:58.189912+00:00",
+  "observed": {
+    "cross_tenant_insert": 404,
+    "cross_tenant_update": 404,
+    "own_insert": 201,
+    "own_update": 200,
+    "invalid_transition": 409
+  },
+  "duration_seconds": 0.6358,
+  "artifact": "evidencias/sql/test_api_write_scope.json"
+}

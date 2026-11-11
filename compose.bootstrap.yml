@@ -1,0 +1,11 @@
+services:
+  bootstrap:
+    build: {context: ., dockerfile: scripts/Dockerfile.bootstrap}
+    environment: [WEB_PORT]
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    network_mode: none
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes: [".:/workspace"]

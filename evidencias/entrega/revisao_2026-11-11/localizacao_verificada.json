@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-11-11T18:38:02.998353+00:00",
+  "root": "C:\\Users\\Guilherme\\Documents\\SecureDB-Lab",
+  "python_environment": "C:\\Users\\Guilherme\\Documents\\SecureDB-Lab\\.venv",
+  "postgres_data": "C:\\Users\\Guilherme\\Documents\\SecureDB-Lab\\.local\\native\\pgdata",
+  "mongo_data": "C:\\Users\\Guilherme\\Documents\\SecureDB-Lab\\.local\\native\\mongodata",
+  "runtime_CA_paths": "inside root",
+  "original_materials_sha256": "3 matched",
+  "shortcut": "C:\\Users\\Guilherme\\Desktop\\SecureDB Lab.lnk",
+  "previous_work_folder_required": false
+}

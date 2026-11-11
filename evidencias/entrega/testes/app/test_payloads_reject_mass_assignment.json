@@ -1,0 +1,14 @@
+{
+  "id": "test_payloads_reject_mass_assignment",
+  "controls": [],
+  "objective": "test_payloads_reject_mass_assignment",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:07.674361+00:00",
+  "observed": {
+    "extra_tenant": "rejected",
+    "operator_object": "rejected",
+    "real_email_domain": "rejected"
+  },
+  "duration_seconds": 0.0005,
+  "artifact": "evidencias/app/test_payloads_reject_mass_assignment.json"
+}

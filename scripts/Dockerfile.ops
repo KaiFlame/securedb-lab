@@ -1,0 +1,25 @@
+FROM python:3.12.12-slim-bookworm
+ARG TARGETARCH
+RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-certificates fonts-dejavu-core && \
+ install -d /usr/share/postgresql-common/pgdg && \
+ curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/postgresql-common/pgdg/key.gpg && \
+ echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/key.gpg] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main' > /etc/apt/sources.list.d/pgdg.list && \
+ apt-get update && apt-get install -y --no-install-recommends postgresql-client-17 && \
+ rm -rf /var/lib/apt/lists/*
+# Official 100.13.0 hashes: https://downloads.mongodb.org/tools/db/full.json
+# MongoDB's Debian ARM apt repository does not ship mongodb-database-tools.
+RUN case "$TARGETARCH" in \
+ amd64) arch=x86_64; checksum=490dcd081cd067209062b7a09f2969dc783c6fecf4457d3405a4b4635a7e1fac ;; \
+ arm64) arch=arm64; checksum=bd404104d7239cc5e88d5ed326870bd851b2012eef92797bfad5c9aa254a364e ;; \
+ *) echo 'Unsupported architecture' >&2; exit 1 ;; esac && \
+ curl -fsSL --retry 3 "https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-${arch}-100.13.0.tgz" -o /tmp/tools.tgz && \
+ echo "$checksum  /tmp/tools.tgz" | sha256sum -c - && \
+ mkdir /tmp/mongo-tools && tar -xzf /tmp/tools.tgz -C /tmp/mongo-tools --strip-components=1 && \
+ install /tmp/mongo-tools/bin/mongodump /tmp/mongo-tools/bin/mongorestore /usr/local/bin/ && \
+ mongodump --version && mongorestore --version && rm -rf /tmp/mongo-tools /tmp/tools.tgz
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 HOME=/tmp LAB_RUNTIME=/run/lab/runtime.json LAB_ADMIN=/run/admin/admin.json LAB_INTEGRATION=1 LAB_EVIDENCE=/app/evidencias LAB_AUDIT=/ops-audit/events.jsonl LAB_DOCKER_HTTP=1
+CMD ["pytest", "tests", "-p", "no:cacheprovider"]

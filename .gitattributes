@@ -1,0 +1,17 @@
+* text=auto eol=lf
+*.sh text eol=lf
+*.ps1 text eol=lf
+*.cmd text eol=crlf
+*.command text eol=lf
+Dockerfile* text eol=lf
+*.sql text eol=lf
+*.js text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.pdf binary
+*.jpg binary
+*.png binary
+
+# Preserve byte-for-byte historical evidence and documents.
+evidencias/entrega/** -text whitespace=cr-at-eol
+docs/historico/** -text whitespace=cr-at-eol

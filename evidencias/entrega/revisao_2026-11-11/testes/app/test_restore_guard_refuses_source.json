@@ -1,0 +1,12 @@
+{
+  "id": "test_restore_guard_refuses_source",
+  "controls": [],
+  "objective": "test_restore_guard_refuses_source",
+  "result": "PASS",
+  "timestamp": "2026-11-11T18:31:32.900757+00:00",
+  "observed": {
+    "source_overwrite": "refused"
+  },
+  "duration_seconds": 0.0001,
+  "artifact": "evidencias/app/test_restore_guard_refuses_source.json"
+}

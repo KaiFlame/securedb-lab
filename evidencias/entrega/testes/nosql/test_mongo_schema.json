@@ -1,0 +1,22 @@
+{
+  "id": "test_mongo_schema",
+  "controls": [
+    "NOSQL-07"
+  ],
+  "objective": "test_mongo_schema",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:03.461979+00:00",
+  "observed": {
+    "valid_product": "accepted by MongoDB",
+    "invalid_product": {
+      "code": 121
+    },
+    "valid_profile": "accepted by MongoDB",
+    "invalid_profile": {
+      "code": 121
+    },
+    "validation_layer": "direct PyMongo write; Pydantic bypassed for this test"
+  },
+  "duration_seconds": 0.0041,
+  "artifact": "evidencias/nosql/test_mongo_schema.json"
+}

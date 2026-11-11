@@ -1,0 +1,18 @@
+{
+  "id": "test_sql_rls_direct",
+  "controls": [
+    "SQL-06"
+  ],
+  "objective": "test_sql_rls_direct",
+  "result": "PASS",
+  "timestamp": "2026-11-11T17:19:05.015978+00:00",
+  "observed": {
+    "no_context_rows": 0,
+    "cross_select_rows": 0,
+    "cross_update_rows": 0,
+    "cross_insert": "RLS denied",
+    "tenant_B": "own rows visible"
+  },
+  "duration_seconds": 0.1877,
+  "artifact": "evidencias/sql/test_sql_rls_direct.json"
+}
