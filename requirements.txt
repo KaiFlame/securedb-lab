@@ -3,7 +3,7 @@ starlette==1.10.0
 uvicorn==0.38.0
 psycopg[binary]==3.2.12
 pymongo==4.19.0
-pydantic-settings==2.11.0
+pydantic-settings==2.16.2
 argon2-cffi==25.1.0
 cryptography==50.0.2
 pytest==9.2.0
