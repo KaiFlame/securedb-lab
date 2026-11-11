@@ -1,25 +1,29 @@
-# Preparação para GitHub
+# Repositório GitHub e manutenção
 
-O diretório já contém Git local na branch main, `.gitignore`, `.dockerignore`, lockfile npm, workflows e templates. Não há remote configurado e nada é publicado automaticamente.
+Repositório público: **https://github.com/KaiFlame/securedb-lab**. O projeto desta pasta usa esse endereço como `origin`, na branch `main`. O primeiro commit publicado foi `fd465892b50a19a007ada79ea2ab407edd5cb3e7`.
 
-O ZIP de distribuição contém os arquivos publicáveis e exclui `.git`, `.local`, dependências e segredos. Se estiver usando uma extração do ZIP, execute primeiro `git init --initial-branch=main` nessa pasta.
+Para instalar em outro computador, siga o [README Windows/macOS](../README.md). Baixar por ZIP dispensa Git, Python e Node no host; Docker Desktop precisa estar instalado e configurado. Os dados e segredos desta máquina não acompanham o repositório.
 
-1. Execute `python scripts/lab.py preflight` e revise o que será versionado.
-2. Execute `git status --short` e `git diff --cached`. `.local`, `.env`, dados, dumps e chaves devem permanecer ignorados.
-3. Identificação: preencha integrantes e RA no relatório. Escolha conscientemente a licença do código original. Os materiais FACAMP têm autoria própria e não são relicenciados por este projeto.
-4. Configure seu nome/e-mail do Git caso necessário; não use identidade inventada.
-5. Crie o repositório vazio no GitHub e use a URL que ele fornecer:
+## Validação da publicação
 
-```sh
+O clone público sem autenticação e o download real por **Code → Download ZIP** foram conferidos. O arquivo contém os iniciadores dos dois sistemas, conserva a permissão executável dos `.command` e exclui `.env`, `.local`, `.venv`, dependências e dados privados.
+
+Os workflows foram disparados, mas os jobs de testes não iniciaram por indisponibilidade de execução na conta GitHub. Logo, ainda não há aprovação remota da instalação Docker. Veja os resultados oficiais de [integração Docker](https://github.com/KaiFlame/securedb-lab/actions/runs/43090005494) e [unitários/interface/Windows](https://github.com/KaiFlame/securedb-lab/actions/runs/43090005597). Um check sem execução não é falha demonstrada do código nem teste aprovado. Mac real e Docker Desktop Windows precisam de execução observada.
+
+## Novas alterações pelo mantenedor
+
+Revise os arquivos e execute os testes adequados antes de publicar. Na instalação Windows preparada:
+
+```powershell
+.venv\Scripts\python scripts/preflight.py
+git status --short
+git diff
 git add .
-git add --chmod=+x iniciar.command parar.command testar.command scripts/*.sh
-git commit -m "Implementa laboratórios SecureDB FACAMP"
-git remote add origin <URL-DO-REPOSITORIO-CRIADO>
-git push -u origin main
+git diff --cached --check
+git commit -m "Descreve a alteração"
+git push
 ```
 
-Não cole senhas em issues, PRs, terminal compartilhado ou README. Antes do primeiro push, confira também o histórico caso tenha feito commits anteriores. O preflight verifica os arquivos rastreados e candidatos não ignorados do checkout; não é prova de ausência de qualquer segredo no histórico ou em serviços externos.
+`preflight.py` verifica arquivos rastreados e candidatos não ignorados; não certifica todo o histórico ou todas as dependências. Não envie `.env`, `.local`, credenciais, tokens, chaves, dumps ou logs brutos. Não use push forçado para resolver divergências sem revisar a origem delas.
 
-A matriz de integração foi configurada para Linux amd64 e arm64: início sem Python/Node do host, HTTP publicado, persistência após down/up e testes com Nginx, TLS e backup/restore. Cada job precisa ser observado no GitHub. CI Linux ARM não substitui teste no Mac real.
-
-A CI unitária usa dados sintéticos e gera sua própria configuração local. A CI de integração sobe o Compose e executa bancos reais, produzindo um artefato de evidências sanitizadas. O sucesso da CI só pode ser declarado depois que a execução ocorrer no repositório do aluno. Nenhum badge de aprovação remota foi incluído.
+Os materiais FACAMP originais permanecem fora do repositório. Os relatórios e as evidências históricas preservam o perfil em que foram produzidos. A licença do código original ainda deve ser escolhida por seu titular; nenhuma licença de terceiros foi presumida.

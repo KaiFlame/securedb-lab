@@ -1,5 +1,7 @@
 # Preparação para publicação — 11/11/2026
 
+> Etapa concluída posteriormente: repositório e commit publicados. Consulte [PUBLICACAO.md](PUBLICACAO.md) para o resultado e o limite de CI.
+
 O usuário autorizou criar um repositório público em `KaiFlame/securedb-lab`. O README foi refeito para quem baixa por ZIP ou clona, com caminhos equivalentes Windows/macOS e guias próprios. A criação remota aguarda autenticação na conta do titular; não foi declarada publicação bem-sucedida sem confirmação do GitHub.
 
 Foram acrescentados os iniciadores `iniciar.cmd`, `parar.cmd`, `testar.cmd` e `scripts/docker.ps1`, compatíveis com Windows PowerShell 5.1. Docker Desktop é o pré-requisito externo; Python, Node, Git e Git Bash não são exigidos para usar o ZIP. O Docker baixa e constrói as dependências da aplicação.

@@ -159,6 +159,8 @@ Examine os logs localmente. Ao pedir ajuda, informe sistema, etapa e mensagem de
 
 ## Validação e limites conhecidos
 
+O repositório público, o clone sem autenticação e o ZIP real foram conferidos. Os iniciadores Windows passaram em 30 verificações no PowerShell 5.1 com chamadas Docker controladas. Os jobs de CI disparados ainda não executaram por indisponibilidade da conta; não há aprovação Docker remota. Veja [o registro de publicação](docs/PUBLICACAO.md).
+
 A revisão anterior de portabilidade observou **46 PASS e 1 SKIP na suíte nativa Windows**, **19 PASS no recorte unitário final** e **5 PASS de interface**, além de TypeScript e build aprovados. As contagens Python se sobrepõem e não devem ser somadas; o SKIP corresponde ao smoke Docker. Veja [REVISAO_DOCKER_MACOS.md](docs/REVISAO_DOCKER_MACOS.md) e o [histórico de validação](docs/VALIDACAO.md).
 
 O motor Docker local estava indisponível nessa revisão. Esses resultados não comprovam execução dos contêineres. A CI foi preparada para Linux `amd64` e `arm64`; consulte os resultados observados em [Actions](https://github.com/KaiFlame/securedb-lab/actions). Um workflow presente no código não equivale a um job aprovado. Mac real ainda exige teste no próprio equipamento, mesmo com CI Linux ARM aprovada.

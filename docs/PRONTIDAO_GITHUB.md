@@ -1,5 +1,7 @@
 # Prontidão para GitHub
 
+> Publicação confirmada posteriormente: [PUBLICACAO.md](PUBLICACAO.md). O repositório e o commit existem; a CI disparou, mas seus jobs não iniciaram. Os estados de preparação abaixo são históricos.
+
 > Preparação posterior: README Windows/macOS e iniciador PowerShell 5.1 conferidos; 30 verificações do iniciador (Docker simulado) e 19 testes unitários Python aprovados. Veja [PREPARACAO_PUBLICACAO.md](PREPARACAO_PUBLICACAO.md). O estado histórico abaixo não equivale ao estado remoto atual.
 
 O projeto está preparado para revisão e futura publicação do código. Nesta preparação não foram criados commits, configurados remotes ou enviados arquivos ao GitHub. A presença de workflows não comprova que a CI tenha executado.

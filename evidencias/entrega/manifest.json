@@ -1,7 +1,7 @@
 {
   "algorithm": "SHA-256",
-  "revision": "Windows/macOS GitHub preparation 2026-11-11",
-  "scope": "Public package file bytes, excludes this manifest and all ignored/private/runtime data",
+  "revision": "Windows/macOS public GitHub handoff 2026-11-11",
+  "scope": "Preparation package working-file bytes; GitHub archives may normalize text line endings. Excludes this manifest and private/runtime data.",
   "files": [
     {
       "path": ".dockerignore",
@@ -45,8 +45,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 12888,
-      "sha256": "7e9ee1efb6ad38d7b9712726d747fd36407f2e9ed48bb97ec6824f4761df6c3f"
+      "bytes": 13246,
+      "sha256": "aca90c3361011fb14df7439d552eea572ba57a1df279a86ab25d59c9fe8809da"
     },
     {
       "path": "SECURITY.md",
@@ -140,13 +140,18 @@
     },
     {
       "path": "docs/PREPARACAO_PUBLICACAO.md",
-      "bytes": 2203,
-      "sha256": "74e52c084efc430078210e3529164110bd322e04de0e83423b17e39860b1978f"
+      "bytes": 2348,
+      "sha256": "0a84580a2401ea2915e782b4e790e4e684e2ab8bbb9ea72df0432425869af146"
     },
     {
       "path": "docs/PRONTIDAO_GITHUB.md",
-      "bytes": 4345,
-      "sha256": "33fcd019c1a06e2452c6d9c6145acc2a3b5441e0bd452ad056bd3353b597efee"
+      "bytes": 4552,
+      "sha256": "d0bc6040af79fef29f3c2760b4aca48758670de04aa3aaa14c21718de412eb79"
+    },
+    {
+      "path": "docs/PUBLICACAO.md",
+      "bytes": 1326,
+      "sha256": "8e48c24d9370ed0aaa29187c8c34bf1b35362e6aea7d68e05f0ce2296aed0951"
     },
     {
       "path": "docs/REVISAO_DOCKER_MACOS.md",
@@ -185,8 +190,8 @@
     },
     {
       "path": "docs/github.md",
-      "bytes": 2159,
-      "sha256": "f2c7533e4843c515ba93a864e35a4df9dcd4853046d21d58464491202f6cf966"
+      "bytes": 2250,
+      "sha256": "c47ac98afc8ccd90db7733928db7eba2d136ce6de9335afc6b8c0a789d58f0e2"
     },
     {
       "path": "docs/historico/entrega_inicial_2026-11-11/README.md",
