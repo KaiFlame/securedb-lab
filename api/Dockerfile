@@ -1,4 +1,4 @@
-FROM python:3.12.12-slim-bookworm AS base
+FROM mirror.gcr.io/python:3.12.12-slim-bookworm AS base
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 COPY requirements.txt .

@@ -1,0 +1,26 @@
+{
+  "id": "ENV-01",
+  "controls": [
+    "SQL-01",
+    "NOSQL-01",
+    "NOSQL-05"
+  ],
+  "result": "PASS",
+  "timestamp": "2026-11-11T20:08:07.527910+00:00",
+  "objective": "Contêineres ativos, rede interna exclusiva e bancos sem portas publicadas",
+  "observed": [
+    {
+      "service": "postgres",
+      "image": "public.ecr.aws/docker/library/postgres:17.6-bookworm",
+      "running": true,
+      "published_ports": []
+    },
+    {
+      "service": "mongo",
+      "image": "public.ecr.aws/docker/library/mongo:8.0.15",
+      "running": true,
+      "published_ports": []
+    }
+  ],
+  "internal_network": true
+}

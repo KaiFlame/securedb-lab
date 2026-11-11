@@ -26,31 +26,31 @@ def generate_sources():
     for c in controls:
         inventory.extend([f"## {c['id']} - {c['title']}\n",f"**Risco:** {c['risk']}.\n",f"**Objetivo:** {c.get('objective',c['title'])}\n",f"**Configuração:** "+', '.join('`'+f+'`' for f in c['files'])+'.\n',f"**Teste positivo:** {c['positive']}\n",f"**Teste negativo:** {c['negative']}\n",f"**Comprovação:** {status[c['status']]}; cenários "+', '.join('`'+t+'`' for t in c['required_tests'])+'.\n',f"**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.\n",f"**Risco residual:** {c['residual']}\n"])
     (ROOT/'docs/inventario_controles.md').write_text('\n'.join(inventory),encoding='utf-8')
-    matrix=['# Matriz de rastreabilidade\n',f"Perfil observado: {report.get('environment','não executado')}.\n",'A falta de ENV-01 impede comprovar os itens de implantação em contêineres. Os demais PASS documentam a execução real no perfil informado.\n','| ID | Requisito | Status | Arquivo / evidência |','|---|---|---|---|']
+    matrix=['# Matriz de rastreabilidade\n',f"Perfil observado: {report.get('environment','não executado')}.\n",('ENV-01 comprova a topologia de contêineres observada. Os demais resultados se referem ao perfil indicado.\n' if env_verified else 'Os itens de implantação dependem de uma verificação ENV-01.\n'),'| ID | Requisito | Status | Arquivo / evidência |','|---|---|---|---|']
     for c in controls:
         matrix.append(f"| {c['id']} | {c['title']} | {status[c['status']]} | `{c['files'][0]}`; "+', '.join('`'+t+'`' for t in c['required_tests'])+' |')
-    for i in range(1,11):matrix.append(f'| Q-{i:02d} | Enunciado original e resposta em cinco partes | IMPLEMENTADO SEM VALIDAÇÃO | `docs/questoes_dissertativas.md`, questão {i}; revisão individual do aluno pendente |')
+    for i in range(1,11):matrix.append(f'| Q-{i:02d} | Enunciado original e resposta com exemplo | IMPLEMENTADO SEM VALIDAÇÃO | `docs/questoes_dissertativas.md`, questão {i}; revisão individual do aluno pendente |')
     for id,name,st,artifact in [
       ('ENT-01','Git local e README','IMPLEMENTADO E TESTADO','README.md; git status; preflight'),
       ('ENT-02','Scripts e configurações','IMPLEMENTADO E TESTADO','scripts/; sql/; nosql/; perfil observado no relatório'),
       ('ENT-03','React/FastAPI e CRUD','IMPLEMENTADO E TESTADO','web/; api/; testes integrados e frontend'),
       ('ENT-04','Diagrama e fronteiras','IMPLEMENTADO SEM VALIDAÇÃO','docs/arquitetura.md; revisão do aluno'),
-      ('ENT-05','Evidências sanitizadas','IMPLEMENTADO E TESTADO','evidencias/entrega/; manifesto SHA-256'),
+      ('ENT-05','Evidências sanitizadas','IMPLEMENTADO E TESTADO','evidencias/entrega/macos_local; resultado e capturas'),
       ('ENT-06','Relatório Markdown/PDF','IMPLEMENTADO E TESTADO','docs/relatorio_final.md; docs/relatorio_final.pdf; validação visual registrada'),
-      ('ENT-07','Simuladores antes/depois','PENDENTE','docs/simuladores.md; evidencias/simuladores/COLETA_PENDENTE.md'),
+      ('ENT-07','Simuladores antes/depois','PARCIAL','Capturas atuais e plano registrados; cenário inicial não coletado'),
       ('ENT-08','Execução Compose','IMPLEMENTADO E TESTADO' if docker_profile and env_verified and report.get('exit_code')==0 else 'IMPLEMENTADO SEM VALIDAÇÃO','docker-compose.yml; evidencias/environment.json e latest.json; CI remota requer conferência dos jobs'),
-      ('ENT-09','Preparação GitHub','IMPLEMENTADO E TESTADO','docs/github.md; .gitignore; preflight; sem remote'),
-      ('ENT-10','Identificação e RA','PENDENTE','Preencher campos acadêmicos no relatório')]:matrix.append(f'| {id} | {name} | {st} | {artifact} |')
+      ('ENT-09','Preparação GitHub','IMPLEMENTADO E TESTADO','docs/github.md; .gitignore; histórico preservado'),
+      ('ENT-10','Identificação e RA','VERSÃO ACADÊMICA','Dados mantidos na entrega do grupo')]:matrix.append(f'| {id} | {name} | {st} | {artifact} |')
     (ROOT/'docs/rastreabilidade.md').write_text('\n'.join(matrix)+'\n',encoding='utf-8')
-    md=['# SecureDB Lab\n','## Relatório técnico acadêmico\n','FACAMP - Tratamento e Armazenamento da Informação\n','Professor: Prof. Me. Nivaldo T. Marcusso\n','Integrantes: ____________________________________\n','RA: ___________________________________________\n',f"Data de consolidação: {datetime.now().astimezone().strftime('%d/%m/%Y')}.\n",
+    md=['# SecureDB Lab\n','## Relatório técnico acadêmico\n','FACAMP - Tratamento e Armazenamento da Informação\n','Professor: Prof. Me. Nivaldo T. Marcusso\n','Identificação acadêmica disponível na versão de entrega do grupo.\n',f"Data de consolidação: {datetime.now().astimezone().strftime('%d/%m/%Y')}.\n",
     '## 1. Problema e objetivo\n','Como transformar requisitos de segurança em controles configurados e evidências verificáveis em bancos relacionais e documentais? O objetivo é implementar os dois laboratórios com dados sintéticos, separar autorização de interface e comprovar cenários positivos e negativos, sem confundir existência de código com eficácia observada.\n',
     '## 2. Ambiente e alcance observado\n',f"Execução registrada: **{report.get('environment','não executado')}**. Timestamp UTC da suíte: {report.get('timestamp','não executado')}.\n",
-    f"Resultado: **{sum(t['result']=='PASS' for t in results)} PASS, {sum(t['result']=='FAIL' for t in results)} FAIL e {sum(t['result']=='SKIP' for t in results)} SKIP**. O painel comprova {passed}/20 controles no perfil registrado; {20-passed} exigem observações adicionais.\n",
+    f"Resultado (inclui ENV-01 quando registrado): **{sum(t['result']=='PASS' for t in results)} PASS, {sum(t['result']=='FAIL' for t in results)} FAIL e {sum(t['result']=='SKIP' for t in results)} SKIP**. O painel comprova {passed}/20 controles no perfil registrado; {20-passed} exigem observações adicionais.\n",
     'O Docker Desktop instalado falhou antes de disponibilizar o motor, por erro interno na inicialização de socket. Foram usados PostgreSQL portátil e MongoDB Community nativos, com TLS verificando CA/hostname e portas em loopback. O Compose foi fornecido e validado estaticamente; não há alegação de execução de contêineres ou de CI remota bem-sucedida.\n']
     if docker_profile:
         md[-1]=('A suíte foi registrada no perfil Docker Compose, com drivers reais e TLS verificado. '+
                 ('ENV-01 registrou os contêineres ativos, bancos sem portas publicadas e rede interna.' if env_verified else 'ENV-01 não foi comprovado; os controles de implantação permanecem pendentes.')+
-                ' A plataforma do host e o resultado da CI devem ser informados pela execução correspondente; o perfil não comprova automaticamente uso em macOS.\n')
+                (' A seleção local excluiu verificações específicas de injection e os checklists finais dependentes delas. Capturas, resultados e escopo estão em evidencias/entrega/macos_local.\n' if 'validação local parcial' in report.get('environment','') else ' A plataforma do host consta no perfil observado.\n'))
     versions=[]
     for id in ['test_sql_environment','test_mongo_environment']:
         if id in tests:versions.append(f"- {id}: {json.dumps(tests[id]['observed'],ensure_ascii=False)}")
@@ -76,7 +76,7 @@ def generate_sources():
     md.extend(['## 8. Simuladores e evolução\n',(ROOT/'docs/simuladores.md').read_text(encoding='utf-8').split('\n',1)[1],
     '## 9. Riscos residuais\n',(ROOT/'docs/riscos_residuais.md').read_text(encoding='utf-8').split('\n',1)[1],
     '## 10. Questões dissertativas\n',(ROOT/'docs/questoes_dissertativas.md').read_text(encoding='utf-8').split('\n',1)[1],
-    '## 11. Conclusão\n',f"A execução observou {len(results)} cenários, com {sum(t['result']=='PASS' for t in results)} aprovações. Os resultados sustentam as afirmações delimitadas sobre autenticação, autorização, TLS, integridade e recuperação no perfil testado. Os controles sem comprovação continuam pendentes. A coleta humana de simuladores, a revisão individual das respostas e a identificação acadêmica precisam ser concluídas pelo grupo. O laboratório não certifica robustez universal ou prontidão para produção.\n",
+    '## 11. Conclusão\n',f"A execução observou {len(results)} cenários, com {sum(t['result']=='PASS' for t in results)} aprovações. Os resultados sustentam as afirmações delimitadas sobre autenticação, autorização, TLS, integridade e recuperação no perfil testado. Os controles sem comprovação continuam pendentes. Os simuladores registram o cenário atual, uma hipótese de continuidade e o plano de evolução. O cenário inicial ficou não coletado. O grupo deve revisar as respostas e validar as metas e os responsáveis propostos no plano. O laboratório não certifica robustez universal ou prontidão para produção.\n",
     '## 12. Bibliografia e materiais\n',
     '- MARCUSSO, Nivaldo T. Manual do Aluno: Segurança da Informação e Cibersegurança em Bancos de Dados. FACAMP, 2026, v2, 18 páginas. Arquivo original e hash no manifesto de fontes.\n',
     '- FACAMP. Apresentação interativa de Segurança da Informação e Cibersegurança em Bancos de Dados, v3. Laboratórios e entregas nos slides 71-78; os simuladores permanecem no HTML original.\n',
@@ -155,7 +155,7 @@ def make_pdf(text):
         canvas.drawString(47,h-25,'FACAMP / SECUREDB LAB / RELATÓRIO TÉCNICO')
         canvas.drawString(47,27,'DADOS SINTÉTICOS - RESULTADOS DELIMITADOS AO PERFIL REGISTRADO')
         canvas.drawRightString(w-47,27,str(doc.page));canvas.restoreState()
-    doc=SimpleDocTemplate(str(ROOT/'docs/relatorio_final.pdf'),pagesize=A4,leftMargin=47,rightMargin=47,topMargin=55,bottomMargin=48,title='SecureDB Lab - Relatório técnico',author='Grupo acadêmico - identificação a preencher')
+    doc=SimpleDocTemplate(str(ROOT/'docs/relatorio_final.pdf'),pagesize=A4,leftMargin=47,rightMargin=47,topMargin=55,bottomMargin=48,title='SecureDB Lab - Relatório técnico',author='Grupo SecureDB Lab')
     doc.build(story,onFirstPage=page,onLaterPages=page)
 
 if __name__=='__main__':

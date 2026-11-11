@@ -1,0 +1,552 @@
+{
+  "timestamp": "2026-11-11T20:54:12.218726+00:00",
+  "environment": "Docker Compose / macOS Apple Silicon / validação local parcial",
+  "exit_code": 0,
+  "tests": [
+    {
+      "id": "test_sql_environment",
+      "controls": [
+        "SQL-01"
+      ],
+      "objective": "test_sql_environment",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:03.917663+00:00",
+      "observed": {
+        "server_version": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "persistent_tables": [
+          "lab.tenants",
+          "lab.customers",
+          "lab.orders"
+        ],
+        "unicode_data": "UTF-8 verified",
+        "profile": "Docker Compose / macOS Apple Silicon / validação local parcial"
+      },
+      "duration_seconds": 0.021,
+      "artifact": "evidencias/sql/test_sql_environment.json"
+    },
+    {
+      "id": "test_sql_roles",
+      "controls": [
+        "SQL-02"
+      ],
+      "objective": "test_sql_roles",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:03.933048+00:00",
+      "observed": {
+        "runtime_role": "api_user",
+        "attributes": {
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "rolreplication": false
+        },
+        "table_owner": "migration_owner",
+        "memberships": {
+          "read": true,
+          "write": true,
+          "migration": false
+        }
+      },
+      "duration_seconds": 0.013,
+      "artifact": "evidencias/sql/test_sql_roles.json"
+    },
+    {
+      "id": "test_sql_privileges",
+      "controls": [
+        "SQL-03"
+      ],
+      "objective": "test_sql_privileges",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:03.993313+00:00",
+      "observed": {
+        "legitimate_select": "accepted",
+        "ddl": "denied",
+        "account_table": "denied",
+        "truncate": "denied",
+        "set_owner_role": "denied",
+        "auth_business_read": "denied"
+      },
+      "duration_seconds": 0.059,
+      "artifact": "evidencias/sql/test_sql_privileges.json"
+    },
+    {
+      "id": "test_sql_authentication",
+      "controls": [
+        "SQL-04"
+      ],
+      "objective": "test_sql_authentication",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:04.026788+00:00",
+      "observed": {
+        "correct_credentials": "accepted",
+        "wrong_credentials": "denied",
+        "stored_verifier": "SCRAM-SHA-256",
+        "origin_limit": "Active pg_hba deny rules verified; foreign container subnet needs final deployment test."
+      },
+      "duration_seconds": 0.031,
+      "artifact": "evidencias/sql/test_sql_authentication.json"
+    },
+    {
+      "id": "test_sql_tls",
+      "controls": [
+        "SQL-05"
+      ],
+      "objective": "test_sql_tls",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:04.046136+00:00",
+      "observed": {
+        "ssl": true,
+        "version": "TLSv1.3",
+        "cipher": "TLS_AES_256_GCM_SHA384",
+        "plaintext": "rejected",
+        "wrong_hostname": "rejected"
+      },
+      "duration_seconds": 0.0171,
+      "artifact": "evidencias/sql/test_sql_tls.json"
+    },
+    {
+      "id": "test_sql_rls_direct",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "test_sql_rls_direct",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:04.089828+00:00",
+      "observed": {
+        "no_context_rows": 0,
+        "cross_select_rows": 0,
+        "cross_update_rows": 0,
+        "cross_insert": "RLS denied",
+        "tenant_B": "own rows visible"
+      },
+      "duration_seconds": 0.0418,
+      "artifact": "evidencias/sql/test_sql_rls_direct.json"
+    },
+    {
+      "id": "test_sql_context_reset",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "test_sql_context_reset",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:04.102087+00:00",
+      "observed": {
+        "reused_connection_after_commit": "zero visible rows; SET LOCAL reset"
+      },
+      "duration_seconds": 0.0107,
+      "artifact": "evidencias/sql/test_sql_context_reset.json"
+    },
+    {
+      "id": "test_sql_audit",
+      "controls": [
+        "SQL-08"
+      ],
+      "objective": "test_sql_audit",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:05.842032+00:00",
+      "observed": {
+        "order_event": {
+          "entity_id": "0f16dff9-e053-4a60-b5df-3c648c3fc2f7",
+          "operation": "INSERT"
+        },
+        "database_logs": {
+          "connection": true,
+          "ddl": true,
+          "failed_auth": true
+        },
+        "export": "only event presence; raw lines excluded"
+      },
+      "duration_seconds": 1.4444,
+      "artifact": "evidencias/sql/test_sql_audit.json"
+    },
+    {
+      "id": "test_sql_backup",
+      "controls": [
+        "SQL-09"
+      ],
+      "objective": "test_sql_backup",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:06.115648+00:00",
+      "observed": {
+        "destination": "restore_pg_2221582682384cdab20c24b21bb23489",
+        "backup_seconds": 0.1082,
+        "restore_seconds": 0.1472,
+        "source": {
+          "lab.tenants": {
+            "count": 2,
+            "sha256": "25cec9cd59e6d68ffd255e0a0f6251fa8087c84966d6407d35d75a2a8e70e058"
+          },
+          "lab.customers": {
+            "count": 3,
+            "sha256": "3c82b091d36f7443a9c46890a3fc223c4a844d6cdd1b7bb6d3d4f82c2e692fd3"
+          },
+          "lab.orders": {
+            "count": 6,
+            "sha256": "e734bdb73ee55df6350a840d70b9bea4a1ab7250cb689863664084068c8c1a57"
+          }
+        },
+        "restored": {
+          "lab.tenants": {
+            "count": 2,
+            "sha256": "25cec9cd59e6d68ffd255e0a0f6251fa8087c84966d6407d35d75a2a8e70e058"
+          },
+          "lab.customers": {
+            "count": 3,
+            "sha256": "3c82b091d36f7443a9c46890a3fc223c4a844d6cdd1b7bb6d3d4f82c2e692fd3"
+          },
+          "lab.orders": {
+            "count": 6,
+            "sha256": "e734bdb73ee55df6350a840d70b9bea4a1ab7250cb689863664084068c8c1a57"
+          }
+        },
+        "artifact_name": "restore_pg_2221582682384cdab20c24b21bb23489.aesgcm",
+        "encrypted": "AES-256-GCM",
+        "consistent_snapshot": true
+      },
+      "duration_seconds": 0.2686,
+      "artifact": "evidencias/sql/test_sql_backup.json"
+    },
+    {
+      "id": "test_mongo_environment",
+      "controls": [
+        "NOSQL-01"
+      ],
+      "objective": "test_mongo_environment",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:06.144350+00:00",
+      "observed": {
+        "server_version": "8.0.15",
+        "edition": "Community"
+      },
+      "duration_seconds": 0.0265,
+      "artifact": "evidencias/nosql/test_mongo_environment.json"
+    },
+    {
+      "id": "test_mongo_admin_separation",
+      "controls": [
+        "NOSQL-02"
+      ],
+      "objective": "test_mongo_admin_separation",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:06.182896+00:00",
+      "observed": {
+        "runtime_identity": [
+          {
+            "user": "api_user",
+            "db": "lab"
+          }
+        ],
+        "admin_separate": true
+      },
+      "duration_seconds": 0.0369,
+      "artifact": "evidencias/nosql/test_mongo_admin_separation.json"
+    },
+    {
+      "id": "test_mongo_anonymous",
+      "controls": [
+        "NOSQL-03"
+      ],
+      "objective": "test_mongo_anonymous",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:06.195319+00:00",
+      "observed": {
+        "anonymous_data_read": "denied",
+        "mongodb_code": 13,
+        "note": "Unauthenticated ping is not a data access test."
+      },
+      "duration_seconds": 0.0108,
+      "artifact": "evidencias/nosql/test_mongo_anonymous.json"
+    },
+    {
+      "id": "test_mongo_rbac",
+      "controls": [
+        "NOSQL-04"
+      ],
+      "objective": "test_mongo_rbac",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:06.199722+00:00",
+      "observed": {
+        "collection_read": "accepted",
+        "admin_users": "denied",
+        "create_user": "denied",
+        "modify_validator": "denied",
+        "other_collection": "denied"
+      },
+      "duration_seconds": 0.0027,
+      "artifact": "evidencias/nosql/test_mongo_rbac.json"
+    },
+    {
+      "id": "test_mongo_network",
+      "controls": [
+        "NOSQL-05"
+      ],
+      "objective": "test_mongo_network",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:06.216117+00:00",
+      "observed": {
+        "bindIp": "0.0.0.0",
+        "note": "Loopback in native profile; Compose requires separate ENV-01 runtime inspection."
+      },
+      "duration_seconds": 0.0151,
+      "artifact": "evidencias/nosql/test_mongo_network.json"
+    },
+    {
+      "id": "test_mongo_tls",
+      "controls": [
+        "NOSQL-06"
+      ],
+      "objective": "test_mongo_tls",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:09.319837+00:00",
+      "observed": {
+        "verified_connection": "TLSv1.3",
+        "plaintext": "rejected",
+        "untrusted_ca": "rejected",
+        "wrong_hostname": "rejected"
+      },
+      "duration_seconds": 3.1008,
+      "artifact": "evidencias/nosql/test_mongo_tls.json"
+    },
+    {
+      "id": "test_mongo_schema",
+      "controls": [
+        "NOSQL-07"
+      ],
+      "objective": "test_mongo_schema",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:09.340594+00:00",
+      "observed": {
+        "valid_product": "accepted by MongoDB",
+        "invalid_product": {
+          "code": 121
+        },
+        "valid_profile": "accepted by MongoDB",
+        "invalid_profile": {
+          "code": 121
+        },
+        "validation_layer": "direct PyMongo write; Pydantic bypassed for this test"
+      },
+      "duration_seconds": 0.0092,
+      "artifact": "evidencias/nosql/test_mongo_schema.json"
+    },
+    {
+      "id": "test_mongo_backup",
+      "controls": [
+        "NOSQL-09"
+      ],
+      "objective": "test_mongo_backup",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:09.534725+00:00",
+      "observed": {
+        "destination": "restore_mongo_50831345609f4af59ce756eacaccf1f0",
+        "backup_seconds": 0.0298,
+        "restore_seconds": 0.1116,
+        "source": {
+          "products": {
+            "count": 7,
+            "sha256": "037320294e4724f3359b1e47bada06da55f9a50d00c8565aa581b0ad5d388031"
+          },
+          "profiles": {
+            "count": 5,
+            "sha256": "7dd793a1bf4c2654fab6cc626ec67d6164cbba1e36d599011f5a914626a412ea"
+          }
+        },
+        "restored": {
+          "products": {
+            "count": 7,
+            "sha256": "037320294e4724f3359b1e47bada06da55f9a50d00c8565aa581b0ad5d388031"
+          },
+          "profiles": {
+            "count": 5,
+            "sha256": "7dd793a1bf4c2654fab6cc626ec67d6164cbba1e36d599011f5a914626a412ea"
+          }
+        },
+        "artifact_name": "restore_mongo_50831345609f4af59ce756eacaccf1f0.aesgcm",
+        "encrypted": "AES-256-GCM",
+        "consistent_snapshot": false,
+        "limitation": "Standalone: comparação antes/depois detecta alterações persistentes; mantenha escritas pausadas."
+      },
+      "duration_seconds": 0.191,
+      "artifact": "evidencias/nosql/test_mongo_backup.json"
+    },
+    {
+      "id": "test_api_authentication",
+      "controls": [
+        "SQL-04",
+        "NOSQL-03"
+      ],
+      "objective": "Login aceito/negado, sessão invalidada e endpoint sem identidade.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:09.899543+00:00",
+      "observed": {
+        "unauthenticated": 401,
+        "bad_password": 401,
+        "valid_login": 200,
+        "logout": "invalidates session"
+      },
+      "duration_seconds": 0.3602,
+      "artifact": "evidencias/sql/test_api_authentication.json"
+    },
+    {
+      "id": "test_api_tenant_access",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "Empresa A não lê ID da B; B consulta o mesmo ID normalmente.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:10.236565+00:00",
+      "observed": {
+        "A_reads_B": 404,
+        "B_reads_B": 200,
+        "tenant_source": "authenticated account"
+      },
+      "duration_seconds": 0.3341,
+      "artifact": "evidencias/sql/test_api_tenant_access.json"
+    },
+    {
+      "id": "test_api_write_scope",
+      "controls": [
+        "SQL-06"
+      ],
+      "objective": "SELECT/INSERT/UPDATE entre empresas e operação legítima na A.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:10.589930+00:00",
+      "observed": {
+        "cross_tenant_insert": 404,
+        "cross_tenant_update": 404,
+        "own_insert": 201,
+        "own_update": 200,
+        "invalid_transition": 409
+      },
+      "duration_seconds": 0.3503,
+      "artifact": "evidencias/sql/test_api_write_scope.json"
+    },
+    {
+      "id": "test_api_viewer_and_csrf",
+      "controls": [
+        "SQL-03",
+        "NOSQL-04"
+      ],
+      "objective": "test_api_viewer_and_csrf",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:10.945341+00:00",
+      "observed": {
+        "viewer_read": 200,
+        "viewer_write": 403,
+        "invalid_csrf": 403
+      },
+      "duration_seconds": 0.3489,
+      "artifact": "evidencias/sql/test_api_viewer_and_csrf.json"
+    },
+    {
+      "id": "test_api_mongo_tenant_and_crud",
+      "controls": [
+        "NOSQL-08"
+      ],
+      "objective": "test_api_mongo_tenant_and_crud",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:11.348496+00:00",
+      "observed": {
+        "product_create": 201,
+        "product_update": 200,
+        "profile_create": 201,
+        "profile_update": 200,
+        "cross_tenant_update": 404
+      },
+      "duration_seconds": 0.3998,
+      "artifact": "evidencias/nosql/test_api_mongo_tenant_and_crud.json"
+    },
+    {
+      "id": "test_profile_search",
+      "controls": [
+        "NOSQL-08"
+      ],
+      "objective": "Pesquisa literal de nome/e-mail/segmento e rejeição de operador/tenant.",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:11.588990+00:00",
+      "observed": {
+        "valid_search": 200,
+        "cross_tenant_results": 0,
+        "regex": "literal",
+        "operator_query": 422,
+        "invalid_segment": 422,
+        "tenant_override": 422
+      },
+      "duration_seconds": 0.2376,
+      "artifact": "evidencias/nosql/test_profile_search.json"
+    },
+    {
+      "id": "test_environment_export_and_profile_scope",
+      "controls": [],
+      "objective": "test_environment_export_and_profile_scope",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:11.597171+00:00",
+      "observed": {
+        "environment_receipt": "included in Docker export; excluded from native result"
+      },
+      "duration_seconds": 0.0017,
+      "artifact": "evidencias/app/test_environment_export_and_profile_scope.json"
+    },
+    {
+      "id": "test_control_details_have_real_source_and_specific_scenarios",
+      "controls": [],
+      "objective": "test_control_details_have_real_source_and_specific_scenarios",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:11.601941+00:00",
+      "observed": {
+        "controls": 20,
+        "source_excerpts": "match versioned files",
+        "scenarios": "specific; positive and negative"
+      },
+      "duration_seconds": 0.0036,
+      "artifact": "evidencias/app/test_control_details_have_real_source_and_specific_scenarios.json"
+    },
+    {
+      "id": "test_desktop_paths_and_cleanup_stay_inside_project",
+      "controls": [],
+      "objective": "test_desktop_paths_and_cleanup_stay_inside_project",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:11.621832+00:00",
+      "observed": {
+        "paths": "project-relative",
+        "traversal": "denied",
+        "database_cleanup": "not selected"
+      },
+      "duration_seconds": 0.0177,
+      "artifact": "evidencias/app/test_desktop_paths_and_cleanup_stay_inside_project.json"
+    },
+    {
+      "id": "test_desktop_restart_clears_old_stop_before_gui",
+      "controls": [],
+      "objective": "test_desktop_restart_clears_old_stop_before_gui",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:11.625686+00:00",
+      "observed": {
+        "previous_stop_marker": "cleared before GUI polling"
+      },
+      "duration_seconds": 0.0015,
+      "artifact": "evidencias/app/test_desktop_restart_clears_old_stop_before_gui.json"
+    },
+    {
+      "id": "test_docker_http_proxy_login_and_isolation",
+      "controls": [],
+      "objective": "test_docker_http_proxy_login_and_isolation",
+      "result": "PASS",
+      "timestamp": "2026-11-11T20:54:12.216560+00:00",
+      "observed": {
+        "proxy": "Nginx/Uvicorn real",
+        "javascript_mime": "correct",
+        "health": 200,
+        "seeded_accounts": 2,
+        "cross_tenant_order": 404,
+        "oversized_body": 413,
+        "csrf": 403,
+        "external_origin": 403,
+        "logout": "session invalidated"
+      },
+      "duration_seconds": 0.5891,
+      "artifact": "evidencias/app/test_docker_http_proxy_login_and_isolation.json"
+    }
+  ]
+}

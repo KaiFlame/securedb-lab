@@ -6,9 +6,7 @@ FACAMP - Tratamento e Armazenamento da Informação
 
 Professor: Prof. Me. Nivaldo T. Marcusso
 
-Integrantes: ____________________________________
-
-RA: ___________________________________________
+Identificação acadêmica disponível na versão de entrega do grupo.
 
 Data de consolidação: 11/11/2026.
 
@@ -18,18 +16,18 @@ Como transformar requisitos de segurança em controles configurados e evidência
 
 ## 2. Ambiente e alcance observado
 
-Execução registrada: **Windows nativo / Documents SecureDB-Lab / atalho e HTTP reais / TLS verificado / Compose não executado**. Timestamp UTC da suíte: 2026-11-11T18:31:33.211049+00:00.
+Execução registrada: **Docker Compose / macOS Apple Silicon / validação local parcial**. Timestamp UTC da suíte: 2026-11-11T20:54:12.218726+00:00.
 
-Resultado: **39 PASS, 0 FAIL e 0 SKIP**. O painel comprova 17/20 controles no perfil registrado; 3 exigem observações adicionais.
+Resultado (inclui ENV-01 quando registrado): **29 PASS, 0 FAIL e 0 SKIP**. O painel comprova 16/20 controles no perfil registrado; 4 exigem observações adicionais.
 
-O Docker Desktop instalado falhou antes de disponibilizar o motor, por erro interno na inicialização de socket. Foram usados PostgreSQL portátil e MongoDB Community nativos, com TLS verificando CA/hostname e portas em loopback. O Compose foi fornecido e validado estaticamente; não há alegação de execução de contêineres ou de CI remota bem-sucedida.
+A suíte foi registrada no perfil Docker Compose, com drivers reais e TLS verificado. ENV-01 registrou os contêineres ativos, bancos sem portas publicadas e rede interna. A seleção local excluiu verificações específicas de injection e os checklists finais dependentes delas. Capturas, resultados e escopo estão em evidencias/entrega/macos_local.
 
-- test_sql_environment: {"server_version": "17.6", "persistent_tables": ["lab.tenants", "lab.customers", "lab.orders"], "unicode_data": "UTF-8 verified", "profile": "Windows nativo / Documents SecureDB-Lab / atalho e HTTP reais / TLS verificado / Compose não executado"}
-- test_mongo_environment: {"server_version": "8.0.8", "edition": "Community"}
+- test_sql_environment: {"server_version": "17.6 (Debian 17.6-2.pgdg12+1)", "persistent_tables": ["lab.tenants", "lab.customers", "lab.orders"], "unicode_data": "UTF-8 verified", "profile": "Docker Compose / macOS Apple Silicon / validação local parcial"}
+- test_mongo_environment: {"server_version": "8.0.15", "edition": "Community"}
 
 As versões Python/Node/dependências e as auditorias estão nos artefatos de entrega. Tags de imagem fixadas não equivalem a digests. Não foi alegada varredura das imagens que não puderam ser iniciadas.
 
-Instalação principal: Documents/SecureDB-Lab, com atalho na Área de Trabalho, ambiente Python próprio, ferramentas nativas, materiais originais e dados locais. A revisão complementar e a validação do inicializador estão em docs/VALIDACAO.md. A evidência inicial foi preservada separadamente.
+O fluxo portátil e a preparação GitHub estão em docs/instalacao_macos.md e docs/PRONTIDAO_GITHUB.md. O histórico Windows e seus limites estão em docs/VALIDACAO.md. Os artefatos anteriores foram preservados; as evidências deste relatório pertencem ao perfil registrado.
 
 ## 3. Arquitetura e limites de confiança
 
@@ -76,70 +74,45 @@ O navegador em HTTP é uma escolha restrita ao laboratório local; o cookie tem 
 A fundação usa setup idempotente para segredos, certificados e sementes; a aplicação aplica papéis/tenant no backend. A CLI executa teste e restore, e o painel lê JSON sanitizado. O procedimento principal e o alternativo estão no README.
 
 ```text
-python scripts/lab.py setup
-python scripts/lab.py up
-python scripts/lab.py seed
-python scripts/lab.py test
-python scripts/lab.py backup --database both
-python scripts/lab.py restore --database both
-python scripts/lab.py report
-python scripts/lab.py preflight
-python scripts/lab.py stop
+sh scripts/docker.sh up
+sh scripts/docker.sh test
+sh scripts/docker.sh backup --database both
+sh scripts/docker.sh restore --database both
+sh scripts/docker.sh report
+sh scripts/docker.sh down
 ```
 
-Os comandos Docker acima são o fluxo disponibilizado para execução final, não um registro de que todos rodaram neste computador. A execução efetivamente observada usou scripts/native.py e pytest com LAB_INTEGRATION=1; os comandos e limites estão em docs/VALIDACAO.md.
+Os comandos descrevem o fluxo portátil disponibilizado. Somente os testes e observações presentes neste relatório comprovam execução; não foi inferido resultado de CI ou de outro host. O histórico nativo está em docs/VALIDACAO.md.
 
 ## 5. Controles e comprovação
 
 | Controle | Resultado | Testes requeridos |
 |---|---|---|
-| SQL-01 - Ambiente isolado | IMPLEMENTADO SEM VALIDAÇÃO | test_sql_environment, ENV-01 |
+| SQL-01 - Ambiente isolado | IMPLEMENTADO E TESTADO | test_sql_environment, ENV-01 |
 | SQL-02 - Roles segregadas | IMPLEMENTADO E TESTADO | test_sql_roles |
 | SQL-03 - Menor privilégio | IMPLEMENTADO E TESTADO | test_sql_privileges, test_api_viewer_and_csrf |
 | SQL-04 - SCRAM e origem | IMPLEMENTADO E TESTADO | test_sql_authentication |
 | SQL-05 - TLS verify-full | IMPLEMENTADO E TESTADO | test_sql_tls |
 | SQL-06 - Isolamento por RLS | IMPLEMENTADO E TESTADO | test_sql_rls_direct, test_api_tenant_access, test_api_write_scope, test_sql_context_reset |
-| SQL-07 - Consultas parametrizadas | IMPLEMENTADO E TESTADO | test_sql_injection, test_api_validation |
+| SQL-07 - Consultas parametrizadas | IMPLEMENTADO SEM VALIDAÇÃO | test_sql_injection, test_api_validation |
 | SQL-08 - Trilha de auditoria | IMPLEMENTADO E TESTADO | test_sql_audit |
 | SQL-09 - Backup e restauração | IMPLEMENTADO E TESTADO | test_sql_backup |
-| SQL-10 - Checklist e testes finais | IMPLEMENTADO E TESTADO | test_sql_final |
-| NOSQL-01 - Ambiente isolado | IMPLEMENTADO SEM VALIDAÇÃO | test_mongo_environment, ENV-01 |
+| SQL-10 - Checklist e testes finais | IMPLEMENTADO SEM VALIDAÇÃO | test_sql_final |
+| NOSQL-01 - Ambiente isolado | IMPLEMENTADO E TESTADO | test_mongo_environment, ENV-01 |
 | NOSQL-02 - Administrador separado | IMPLEMENTADO E TESTADO | test_mongo_admin_separation |
 | NOSQL-03 - Autenticação obrigatória | IMPLEMENTADO E TESTADO | test_mongo_anonymous |
 | NOSQL-04 - RBAC por coleção | IMPLEMENTADO E TESTADO | test_mongo_rbac, test_api_viewer_and_csrf |
-| NOSQL-05 - Rede restrita | IMPLEMENTADO SEM VALIDAÇÃO | test_mongo_network, ENV-01 |
+| NOSQL-05 - Rede restrita | IMPLEMENTADO E TESTADO | test_mongo_network, ENV-01 |
 | NOSQL-06 - TLS obrigatório | IMPLEMENTADO E TESTADO | test_mongo_tls |
 | NOSQL-07 - Schema no SGBD | IMPLEMENTADO E TESTADO | test_mongo_schema |
-| NOSQL-08 - Filtros tipados | IMPLEMENTADO E TESTADO | test_mongo_injection, test_profile_search |
+| NOSQL-08 - Filtros tipados | IMPLEMENTADO SEM VALIDAÇÃO | test_mongo_injection, test_profile_search |
 | NOSQL-09 - Backup e restauração | IMPLEMENTADO E TESTADO | test_mongo_backup |
-| NOSQL-10 - Checklist e testes finais | IMPLEMENTADO E TESTADO | test_mongo_final |
+| NOSQL-10 - Checklist e testes finais | IMPLEMENTADO SEM VALIDAÇÃO | test_mongo_final |
 
 ## 6. Testes positivos e negativos
 
 | ID | Resultado | Objetivo |
 |---|---|---|
-| test_api_authentication | PASS | Login aceito/negado, sessão invalidada e endpoint sem identidade. |
-| test_api_tenant_access | PASS | Empresa A não lê ID da B; B consulta o mesmo ID normalmente. |
-| test_api_write_scope | PASS | SELECT/INSERT/UPDATE entre empresas e operação legítima na A. |
-| test_api_viewer_and_csrf | PASS | test_api_viewer_and_csrf |
-| test_api_validation | PASS | test_api_validation |
-| test_api_mongo_tenant_and_crud | PASS | test_api_mongo_tenant_and_crud |
-| test_desktop_http_proxy_and_assets | PASS | test_desktop_http_proxy_and_assets |
-| test_profile_search | PASS | Pesquisa literal de nome/e-mail/segmento e rejeição de operador/tenant. |
-| test_environment_export_and_profile_scope | PASS | test_environment_export_and_profile_scope |
-| test_control_details_have_real_source_and_specific_scenarios | PASS | test_control_details_have_real_source_and_specific_scenarios |
-| test_desktop_paths_and_cleanup_stay_inside_project | PASS | test_desktop_paths_and_cleanup_stay_inside_project |
-| test_desktop_restart_clears_old_stop_before_gui | PASS | test_desktop_restart_clears_old_stop_before_gui |
-| test_mongo_environment | PASS | test_mongo_environment |
-| test_mongo_admin_separation | PASS | test_mongo_admin_separation |
-| test_mongo_anonymous | PASS | test_mongo_anonymous |
-| test_mongo_rbac | PASS | test_mongo_rbac |
-| test_mongo_network | PASS | test_mongo_network |
-| test_mongo_tls | PASS | test_mongo_tls |
-| test_mongo_schema | PASS | test_mongo_schema |
-| test_mongo_injection | PASS | test_mongo_injection |
-| test_mongo_backup | PASS | test_mongo_backup |
-| test_mongo_final | PASS | test_mongo_final |
 | test_sql_environment | PASS | test_sql_environment |
 | test_sql_roles | PASS | test_sql_roles |
 | test_sql_privileges | PASS | test_sql_privileges |
@@ -147,64 +120,93 @@ Os comandos Docker acima são o fluxo disponibilizado para execução final, nã
 | test_sql_tls | PASS | test_sql_tls |
 | test_sql_rls_direct | PASS | test_sql_rls_direct |
 | test_sql_context_reset | PASS | test_sql_context_reset |
-| test_sql_injection | PASS | test_sql_injection |
 | test_sql_audit | PASS | test_sql_audit |
 | test_sql_backup | PASS | test_sql_backup |
-| test_sql_final | PASS | test_sql_final |
-| test_payloads_reject_mass_assignment | PASS | test_payloads_reject_mass_assignment |
-| test_filters_reject_operators_and_escape_regex | PASS | test_filters_reject_operators_and_escape_regex |
-| test_unsafe_origin_denied_before_database | PASS | test_unsafe_origin_denied_before_database |
-| test_controls_require_complete_evidence | PASS | test_controls_require_complete_evidence |
-| test_restore_guard_refuses_source | PASS | test_restore_guard_refuses_source |
-| test_certificates_and_encrypted_backup | PASS | test_certificates_and_encrypted_backup |
+| test_mongo_environment | PASS | test_mongo_environment |
+| test_mongo_admin_separation | PASS | test_mongo_admin_separation |
+| test_mongo_anonymous | PASS | test_mongo_anonymous |
+| test_mongo_rbac | PASS | test_mongo_rbac |
+| test_mongo_network | PASS | test_mongo_network |
+| test_mongo_tls | PASS | test_mongo_tls |
+| test_mongo_schema | PASS | test_mongo_schema |
+| test_mongo_backup | PASS | test_mongo_backup |
+| test_api_authentication | PASS | Login aceito/negado, sessão invalidada e endpoint sem identidade. |
+| test_api_tenant_access | PASS | Empresa A não lê ID da B; B consulta o mesmo ID normalmente. |
+| test_api_write_scope | PASS | SELECT/INSERT/UPDATE entre empresas e operação legítima na A. |
+| test_api_viewer_and_csrf | PASS | test_api_viewer_and_csrf |
+| test_api_mongo_tenant_and_crud | PASS | test_api_mongo_tenant_and_crud |
+| test_profile_search | PASS | Pesquisa literal de nome/e-mail/segmento e rejeição de operador/tenant. |
+| test_environment_export_and_profile_scope | PASS | test_environment_export_and_profile_scope |
+| test_control_details_have_real_source_and_specific_scenarios | PASS | test_control_details_have_real_source_and_specific_scenarios |
+| test_desktop_paths_and_cleanup_stay_inside_project | PASS | test_desktop_paths_and_cleanup_stay_inside_project |
+| test_desktop_restart_clears_old_stop_before_gui | PASS | test_desktop_restart_clears_old_stop_before_gui |
+| test_docker_http_proxy_login_and_isolation | PASS | test_docker_http_proxy_login_and_isolation |
+| ENV-01 | PASS | Contêineres ativos, rede interna exclusiva e bancos sem portas publicadas |
 
 ## 7. Backup e restauração medidos
 
 ### test_sql_backup
-Destino novo: `restore_pg_c2466e73af2d4114a309e169bd0899a3`. Dump: **0.2117 s**. Restore e verificação: **0.4038 s**. Cópia mantida: AES-256-GCM. Snapshot consistente: sim (PostgreSQL).
+Destino novo: `restore_pg_2221582682384cdab20c24b21bb23489`. Dump: **0.1082 s**. Restore e verificação: **0.1472 s**. Cópia mantida: AES-256-GCM. Snapshot consistente: sim (PostgreSQL).
 
 | Estrutura | Origem | Restaurado | Fingerprint |
 |---|---|---|---|
 | lab.tenants | 2 | 2 | igual |
 | lab.customers | 3 | 3 | igual |
-| lab.orders | 16 | 16 | igual |
+| lab.orders | 6 | 6 | igual |
 
 O hash completo e o nome do artefato cifrado estão no JSON do teste. Os tempos não são um benchmark e não comprovam RTO/RPO de negócio.
 
 ### test_mongo_backup
-Destino novo: `restore_mongo_c5f432aabd984c7f93203aba38dad0ab`. Dump: **0.0796 s**. Restore e verificação: **0.2334 s**. Cópia mantida: AES-256-GCM. Snapshot consistente: não (MongoDB standalone; escritas devem ser pausadas).
+Destino novo: `restore_mongo_50831345609f4af59ce756eacaccf1f0`. Dump: **0.0298 s**. Restore e verificação: **0.1116 s**. Cópia mantida: AES-256-GCM. Snapshot consistente: não (MongoDB standalone; escritas devem ser pausadas).
 
 | Estrutura | Origem | Restaurado | Fingerprint |
 |---|---|---|---|
-| products | 17 | 17 | igual |
-| profiles | 14 | 14 | igual |
+| products | 7 | 7 | igual |
+| profiles | 5 | 5 | igual |
 
 O hash completo e o nome do artefato cifrado estão no JSON do teste. Os tempos não são um benchmark e não comprovam RTO/RPO de negócio.
 
 ## 8. Simuladores e evolução
 
+Fonte: apresentação FACAMP, slides 67–70, e Manual do Aluno, pp. 5–8. Os simuladores foram executados no HTML original em 11/11/2026. A versão acadêmica inclui as capturas. O cenário inicial dos simuladores 1 a 3 ficou **não coletado**. Os resultados abaixo registram o cenário atual e, no simulador 3, uma hipótese de planejamento. Os valores e as recomendações calculadas estão em `evidencias/simuladores/resultados-macos.json`.
 
-Use os simuladores existentes no HTML original. Os valores são **informados pelo aluno**, mesmo quando derivados de medições. Não constituem teste automatizado nem auditoria formal. Nenhum cenário inicial foi coletado nesta execução; a comparação antes/depois permanece pendente de coleta humana, sem reconstrução fictícia do passado.
+## 1. Governança de SI — 31/100, nível 2 (Repetível)
 
-## 1. Governança de SI
+| Domínio | Nota / 5 | Justificativa |
+|---|---|---|
+| IAM | 2 | Papéis segregados e operações permitidas e negadas verificadas nos dois bancos. |
+| MFA/PAM | 0 | Administração por senha, sem MFA/PAM demonstrados. |
+| Criptografia | 2 | TLS verificado nos bancos e restauração a partir de backups cifrados. |
+| Rede | 2 | ENV-01 observou a rede interna do Compose e os bancos sem portas publicadas. |
+| Hardening | 1 | Configurações de segurança registradas. Falta rotina de revisão e atualização. |
+| Logging/SIEM | 2 | Eventos de conexão e DDL observados no PostgreSQL e trilha da aplicação. Falta centralização e alerta. |
+| BCM/DR | 2 | Restaurações verificadas em bases separadas. Backups sob demanda no mesmo host. |
+| DevSecOps | 1 | Testes locais repetíveis. Evidência limitada de automação contínua. |
+| Privacidade/LGPD | 2 | Dados sintéticos e separação por empresa. Governança de retenção e conformidade ainda por definir. |
+| Risco/compliance | 1 | Riscos residuais documentados. Falta rotina de revisão e definição de responsáveis. |
 
-Registre os dez domínios, nota 0-5, peso, justificativa e caminho de evidência: IAM 12; MFA/PAM 10; criptografia 11; rede 10; hardening 9; logging 10; BCM 12; DevSecOps 9; privacidade 8; risco/compliance 9. O índice didático é a soma ponderada das notas dividida por 5 (pesos somam 100). Registre nível e quatro lacunas destacadas. Não conceda nota máxima por haver um arquivo de configuração.
+O HTML destacou MFA/PAM, hardening, DevSecOps e gestão de riscos.
 
-## 2. IAM e exposição
+## 2. IAM e exposição — 60/100, postura Controlada
 
-Anote ambiente, banco, privilégio, autenticação administrativa, endpoint público, segredo versionado, recertificação, logs, identidade de workload e break-glass. Compare somente alterações comprovadas e cite controles SQL-02/03/04 e NOSQL-02/03/04/05. Uma senha estática de serviço não é identidade de workload federada. Não marque MFA/PAM ou recertificação sem processo real.
+Ambiente local (on-premises), SQL + NoSQL, mínimo privilégio e segregação, senha administrativa forte, endpoint público desmarcado e auditoria marcada pelos logs locais. O item de senha em código/.env real foi marcado porque a instalação gera um .env local com credenciais. O arquivo é ignorado pelo Git. Recertificação, identidade federada de workload e acesso de emergência controlado ficaram desmarcados. Evidências: ENV-01, SQL-02/03/04/08 e NOSQL-02/03/04/05.
 
-## 3. BCM / RTO / RPO
+## 3. BCM — cenário hipotético, 36/100, Insuficiente
 
-Defina requisitos do cenário fictício com justificativa do aluno, sem apresentá-los como requisito do professor. Copie `backup_seconds` e `restore_seconds` dos testes SQL-09/NOSQL-09, considerando que o tempo de recuperação do serviço completo inclui mais que o restore do banco. Frequência de backup não foi automatizada; logo, não há RPO operacional garantido. HA, offsite, imutabilidade e plano de DR completo permanecem ausentes. Cópia AES-GCM no mesmo host não atende sozinha 3-2-1-1-0.
+As restaurações foram medidas com dados pequenos. PostgreSQL: dump de 0,1082 s, restauração e verificação de 0,1472 s. MongoDB: dump de 0,0298 s, restauração e verificação de 0,1116 s. Os destinos separados foram verificados nos testes SQL-09 e NOSQL-09. Esses tempos medem a recuperação dos bancos com os dados do teste.
 
-## 4. Plano de evolução
+O simulador exige uma frequência. Como os backups reais são manuais, o campo foi preenchido com uma **hipótese** diária para mostrar a lacuna em relação a um RPO proposto de 8 horas. O exercício usa RTO proposto de 1 hora e estimativa de 30 minutos para recuperar o serviço, incluindo atividades além do restore. Os valores representam um cenário didático para discussão. A única opção marcada foi backup criptografado. A restauração observada foi pontual e a opção de teste periódico ficou desmarcada. Na operação atual, a frequência manual deixa o RPO sem garantia.
 
-Registre nível atual/alvo, gap, prioridade e ambiente. Propostas P1: (a) backups agendados/offsite/imutáveis e chave em cofre; (b) identidade administrativa com MFA/PAM e revisão de acesso; (c) centralização de logs, retenção e alertas. Responsáveis: preencher pelo grupo. Evidências esperadas: execução e logs de restore, revisão assinada de acesso e alerta observado. São propostas, não controles existentes.
+## 4. Plano de evolução — nível 2 para 3
 
-## Coleta
+O HTML calculou lacuna de 1 nível e esforço baixo para o foco de redução de risco em ambiente local. A tabela transforma as recomendações do simulador em ações do grupo, com responsáveis propostos por função. A revisão periódica fica em P3 como etapa de acompanhamento definida para a entrega.
 
-Salve em `evidencias/simuladores/` os quatro pares de capturas quando houver cenário inicial verdadeiro, justificativas em Markdown e um JSON com `origem: informado pelo aluno`, data, parâmetros, resultado, evidência e limitações. Se não houver captura inicial, registre “não coletado”; não simule uma captura retroativa. Revise limitações da fórmula do HTML antes de interpretar mudanças de pontuação como ganho real de segurança.
+| Prioridade | Ação proposta | Responsável proposto | Evidência esperada |
+|---|---|---|---|
+| P1 | Revisar acesso administrativo, avaliar MFA/PAM e atualizar o registro de riscos. | Segurança e infraestrutura | Matriz de acesso revisada e registro de riscos com responsáveis. |
+| P2 | Definir periodicidade e retenção de backups, separar a cópia e testar a restauração. | Administração dos bancos | Agenda, registro de restauração e comparação dos dados. |
+| P2 | Centralizar logs e formalizar a revisão de privilégios e de atualizações. | Operação e segurança | Evento recebido no destino e registro da revisão. |
+| P3 | Revisar as ações após novo exercício e atualizar a pontuação com as evidências obtidas. | Grupo | Comparação datada e inventário de controles atualizado. |
 
 ## 9. Riscos residuais
 
@@ -233,151 +235,51 @@ Os dumps incluem hashes de contas e sessões. Apenas a cópia cifrada é mantida
 ## 10. Questões dissertativas
 
 
-Enunciados originais preservados. As respostas abaixo são subsídios técnicos para revisão individual do aluno, e não declaração de autoria do grupo. As configurações foram implementadas; a validação observada e seu perfil devem ser conferidos em `evidencias/entrega/resultado_integrado.json` e no relatório.
+Respostas para apresentação oral, com exemplos dos laboratórios e evidências da execução local quando disponíveis. As questões seguem os slides 76 e 77 e o Manual do Aluno, pp. 16–17.
 
 ## 1. Explique por que a aplicação não deve utilizar uma conta administrativa do PostgreSQL. Relacione sua resposta às roles criadas no laboratório e aos princípios de least privilege e segregação de funções.
 
-**Conceito.** Mínimo privilégio limita cada identidade às operações necessárias; segregação de funções separa uso, evolução e administração do banco.
-
-**Risco.** Uma credencial de DBA na API transforma uma falha de aplicação em capacidade de criar usuários, alterar políticas, ler todos os dados ou remover estruturas.
-
-**Configuração implementada.** `migration_owner` é NOLOGIN e proprietário das estruturas. `app_read` e `app_write` são grupos sem login, herdados por `api_user`. Este não tem SUPERUSER, CREATEDB, CREATEROLE, REPLICATION ou BYPASSRLS. `auth_user` acessa contas/sessões e não tabelas de negócio. O bootstrap usa administrador separado.
-
-**Evidência observável.** `test_sql_roles` verifica atributos, proprietário e memberships; `test_sql_privileges` aceita SELECT legítimo e nega CREATE TABLE, TRUNCATE, leitura de auth.accounts e SET ROLE migration_owner. Ver SQL-02/03 e os JSON da execução, cujo perfil está explicitado no relatório.
-
-**Limitação ou risco residual.** O proprietário e o administrador conservam poderes elevados. O comprometimento integral do backend também pode atingir suas duas credenciais; a separação reduz permissões, mas não cria uma fronteira física entre os processos.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+A aplicação não deve usar uma conta administrativa porque essa conta tem muitos privilégios. Se a aplicação for invadida, alguém poderia alterar ou excluir dados e até modificar configurações importantes do banco. Por isso, o ideal é criar roles com permissões específicas, como uma para consultas e outra para as operações de escrita necessárias. Isso aplica o privilégio mínimo, ou seja, cada conta recebe apenas o acesso de que precisa. Também respeita a segregação de funções, separando a administração das tarefas comuns da aplicação. No laboratório, isso pode ser demonstrado mostrando as permissões das roles e uma operação administrativa negada à conta da aplicação.
 
 ## 2. Considere que o PostgreSQL foi instalado em um servidor interno. Descreva como pg_hba.conf, firewall, SCRAM e TLS trabalham juntos para reduzir o risco de acesso indevido ao banco.
 
-**Conceito.** Firewall restringe alcance da porta; pg_hba define origem, usuário, base e método; SCRAM autentica por desafio/resposta; TLS cifra o tráfego e permite verificar o servidor.
-
-**Risco.** Uma senha forte não impede alcance indevido da rede nem interceptação se o cliente não validar certificado e hostname. TLS não limita o que um usuário autenticado pode consultar.
-
-**Configuração implementada.** O Compose define rede interna sem portas dos bancos publicadas. Regras hostssl aceitam apenas as identidades/bases previstas na subnet de dados e rejeitam plaintext e demais origens. password_encryption usa scram-sha-256; psycopg usa verify-full e CA local. O perfil nativo troca a subnet por loopback.
-
-**Evidência observável.** `test_sql_authentication` confere verificador SCRAM e credencial inválida; `test_sql_tls` observa pg_stat_ssl e nega plaintext/hostname errado. ENV-01 inspeciona Docker efetivo quando disponível. Nesta entrega, a execução nativa não comprova a regra de uma origem estrangeira de rede de contêineres.
-
-**Limitação ou risco residual.** Firewall real do host e alcance a partir de uma rede externa não foram certificados nesta execução. A CA é didática e seus 90 dias de validade exigem renovação planejada.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+Esses quatro recursos funcionam como camadas de proteção. O firewall limita quais máquinas conseguem chegar à porta do banco. O arquivo pg_hba.conf determina quais usuários, bancos e origens podem tentar uma conexão e qual método de autenticação será exigido. O SCRAM faz a verificação de senha de forma mais segura, e o TLS criptografa a comunicação para proteger os dados em trânsito. Assim, não dependemos de uma única barreira. Como evidência, podemos apresentar a regra de conexão segura, uma tentativa de acesso bloqueada e uma conexão estabelecida com TLS.
 
 ## 3. No cenário multiempresa, explique como Row-Level Security ajuda a impedir que um usuário de uma empresa consulte pedidos de outra. Indique também uma limitação do uso de RLS.
 
-**Conceito.** RLS restringe as linhas visíveis e graváveis no SGBD, mesmo quando uma consulta da aplicação não contém WHERE de tenant.
-
-**Risco.** Confiar em tenant_id do navegador permitiria forjar contexto. Políticas somente de leitura também deixariam lacunas de inserção ou atualização.
-
-**Configuração implementada.** Tenants, customers e orders têm ENABLE/FORCE RLS e políticas USING/WITH CHECK. O backend obtém tenant da conta autenticada e executa set_config com is_local=true na transação. A FK composta liga cliente e pedido na mesma empresa. A conta runtime não é proprietária nem tem BYPASSRLS.
-
-**Evidência observável.** `test_sql_rls_direct` observa leitura vazia, UPDATE de zero linhas e INSERT negado no contexto A contra B. `test_api_tenant_access` e `test_api_write_scope` verificam IDs/URLs, criação e alteração. `test_sql_context_reset` reutiliza a conexão após commit e confirma ausência de contexto remanescente.
-
-**Limitação ou risco residual.** O GUC de contexto pode ser alterado por quem já controla a sessão SQL; logo, não protege de um backend comprometido ou de SQL arbitrário. Superusers/BYPASSRLS continuam fora da proteção. RLS não substitui revisão de views, funções e privilégios globais.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+A RLS é uma segurança em nível de linha. Ela permite definir regras para que cada empresa consiga consultar apenas os pedidos que pertencem a ela, mesmo que todas utilizem a mesma tabela. Por exemplo, a empresa A não deve enxergar os registros da empresa B. Isso ajuda a evitar vazamento de informações entre clientes. Uma limitação é que superusuários podem ignorar essa proteção; além disso, regras mal configuradas ou um identificador de empresa informado incorretamente podem comprometer o isolamento. Para comprovar o controle, podemos testar a consulta de uma empresa e verificar que os pedidos da outra não aparecem.
 
 ## 4. Explique por que prepared statements são essenciais mesmo quando a aplicação já valida campos do formulário. Use um exemplo do laboratório para diferenciar validação de entrada e parametrização.
 
-**Conceito.** Validação confirma formato, tipo, faixa e regra de negócio. Parametrização mantém dados separados da estrutura do comando SQL.
-
-**Risco.** Entradas válidas como texto ainda podem conter aspas ou trechos semelhantes a comandos. A concatenação permitiria que dados mudassem a lógica da consulta.
-
-**Configuração implementada.** A pesquisa de clientes usa ILIKE com placeholder %s e tupla de parâmetros; o driver executa com prepare=True. Pedidos têm UUID, limite de texto e Decimal positivo com duas casas. Não se interpola entrada na sintaxe SQL.
-
-**Evidência observável.** `test_sql_injection` envia uma busca legítima e a string adversarial inofensiva com aspas/OR. A segunda retorna zero resultados, mantendo o filtro de tenant e tratando a entrada como dado. `test_api_validation` recusa mass assignment de tenant_id e tipos indevidos.
-
-**Limitação ou risco residual.** Validação e parametrização não concedem autorização. Identificadores SQL dinâmicos, quando necessários na operação de restore, usam psycopg.sql.Identifier e uma allowlist de tabelas; não placeholders de valores.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+A validação verifica se o dado digitado está no formato esperado, como um e-mail válido ou um número. Já os prepared statements, usados com parâmetros, separam os dados do comando SQL. Assim, mesmo que alguém digite um texto malicioso, o banco trata esse conteúdo como valor, e não como parte da consulta. Por exemplo, em um campo de login ou de busca, a entrada do usuário deve ser enviada como parâmetro, nunca colada diretamente no SQL. Por isso, validar e parametrizar são cuidados diferentes e complementares: um confere a entrada e o outro previne que ela altere a estrutura do comando.
 
 ## 5. Proponha um conjunto mínimo de logs, alertas e evidências de backup/restore que deveriam ser mantidos para demonstrar segurança e capacidade de recuperação do banco SQL.
 
-**Conceito.** Auditoria registra quem fez o quê e quando; continuidade exige cópia recuperável e evidência de restauração, não apenas um comando de dump concluído.
-
-**Risco.** Sem logs de login/DDL/privilégios e eventos críticos, uma alteração pode passar sem atribuição. Backup não testado pode falhar quando necessário.
-
-**Configuração implementada.** Logs nativos registram conexão/desconexão e DDL; a API grava eventos estruturados sem corpo/token/senha; um trigger SQL registra ator, operação, tenant e pedido. O dump usa snapshot exportado e a cópia mantida usa AES-256-GCM. Restore cria uma base com prefixo protegido e nome novo.
-
-**Evidência observável.** `test_sql_audit` verifica INSERT do pedido na trilha e presença real de conexão, DDL e falha de autenticação no log, exportando somente flags sanitizadas. `test_sql_backup` compara contagens e fingerprints de tenants/customers/orders após restauração, registrando duração.
-
-**Limitação ou risco residual.** Não há SIEM/alertas automáticos/retencão imutável. Proponho alertas de falhas repetidas de autenticação, mudanças de privilégios, falha de backup e atraso de restore test. A cópia local e a chave no mesmo host não satisfazem recuperação de desastre; RTO/RPO precisam de requisitos e operação contínua.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+Para demonstrar segurança, o banco deve registrar tentativas de login, falhas de autenticação, mudanças de permissões, alterações importantes na estrutura do banco e operações críticas. Também é útil ter alertas para muitas tentativas de acesso, privilégios elevados inesperadamente e atividades fora do padrão. Para a recuperação, não basta guardar um backup: precisamos registrar quando ele foi feito, se terminou corretamente e se foi possível restaurar os dados em um teste. Isso se relaciona ao BCM, que busca manter ou recuperar a operação, e aos conceitos de RTO (tempo aceitável para recuperar o serviço) e RPO (quantidade aceitável de dados perdidos). As evidências seriam logs, alertas, registros dos backups e uma restauração testada.
 
 ## 6. Explique a diferença entre a conta administrativa e a conta da aplicação. Quais riscos surgem quando a aplicação recebe permissões além das necessárias?
 
-**Conceito.** A conta administrativa gerencia identidades, esquemas e tarefas operacionais; a conta da aplicação executa o caso de uso dentro de privilégios delimitados.
-
-**Risco.** Uma API com root ou privilégio de mudar validadores pode criar usuários, neutralizar controles e ampliar o alcance de um vazamento.
-
-**Configuração implementada.** `lab_admin` tem papel root para bootstrap e operações isoladas, fora da API. `api_user` autentica em lab e herda catalog_api, com find/insert/update apenas em products/profiles. Não tem remove, createUser, collMod ou bypassDocumentValidation.
-
-**Evidência observável.** `test_mongo_admin_separation` observa connectionStatus e identidade distinta. `test_mongo_rbac` aceita leitura e recusa usersInfo administrativo, createUser, collMod e escrita em coleção não concedida com código 13.
-
-**Limitação ou risco residual.** O acesso da aplicação cobre documentos de duas empresas e a fronteira entre elas é implementada no servidor. RBAC por coleção não equivale a isolamento por linha/documento de tenant.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+No MongoDB, a conta administrativa é usada para gerenciar o banco, seus usuários e suas configurações. A conta da aplicação deve ter acesso apenas às coleções e operações necessárias para o sistema funcionar. O RBAC organiza isso por meio de papéis e permissões. Se a aplicação receber privilégios demais e for comprometida, alguém poderá consultar informações indevidas, modificar registros ou até apagar dados que não deveria. Por isso, usamos contas separadas e permissões mínimas. Uma forma de comprovar essa separação é mostrar os papéis configurados e testar que a conta da aplicação não consegue executar uma ação administrativa.
 
 ## 7. Considere uma API que aceite filtros MongoDB enviados diretamente pelo cliente. Explique como operadores como $ne ou $where podem ser abusados e como a aplicação deve validar os filtros.
 
-**Conceito.** Operadores MongoDB são parte da linguagem de consulta. Aceitar o objeto do cliente como filtro permite que ele determine a semântica da busca.
-
-**Risco.** $ne pode ampliar igualdade para desigualdade; $where pode introduzir expressões de JavaScript em configurações que o habilitem. Repassar JSON arbitrário cria uma superfície além dos filtros de produto previstos.
-
-**Configuração implementada.** CatalogQuery só aceita q, category e limit, com extra=forbid, enum e limites. Objetos e caracteres de operador não são aceitos no texto. O servidor monta tenant_id a partir da sessão e usa re.escape para a busca literal. JavaScript server-side está desabilitado na configuração.
-
-**Evidência observável.** `test_mongo_injection` e `test_api_validation` rejeitam q[$ne], $where, JSON indevido e objeto no preço com HTTP 422. A busca por metacaracteres .* não amplia os resultados. A escrita/consulta entre empresas também é verificada pela API.
-
-**Limitação ou risco residual.** A defesa depende de todos os caminhos usarem a construção de filtros revisada. Índices, limites e autorização continuam necessários para desempenho e proteção de dados; bloquear um caractere sozinho não é uma solução geral.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+O problema é deixar o cliente enviar um filtro que o MongoDB execute sem controle. Um atacante pode usar operadores como $ne para mudar o sentido de uma comparação e tentar contornar uma verificação, ou $where para introduzir uma condição de consulta perigosa. Para evitar isso, a aplicação precisa validar os tipos dos valores, aceitar apenas os campos e operadores realmente necessários e montar o filtro no servidor. Por exemplo, se a API espera um nome como texto, ela não deve aceitar no lugar dele um objeto com operadores MongoDB. O teste de segurança consiste em enviar uma entrada inesperada e verificar que ela seja rejeitada.
 
 ## 8. Por que utilizar JSON Schema em um banco orientado a documentos considerado flexível? Relacione a resposta com integridade, qualidade dos dados e segurança.
 
-**Conceito.** Flexibilidade documental permite evolução, mas não elimina invariantes de integridade e de segurança. JSON Schema estabelece contrato no ponto persistente.
-
-**Risco.** Sem um contrato, preços negativos, tipos incorretos ou campos inesperados podem quebrar regras de negócio, gerar interpretações divergentes e contaminar os dados.
-
-**Configuração implementada.** Produtos e perfis têm $jsonSchema strict/error com campos obrigatórios, tipos BSON, faixas, enumerações e additionalProperties=false. _id e tenant_id têm formato previsto; índices únicos reforçam SKU/e-mail por empresa. A API possui validação adicional com Pydantic.
-
-**Evidência observável.** `test_mongo_schema` grava diretamente via PyMongo, sem passar pelo formulário/Pydantic: produto/perfil válido é aceito e documento inválido é recusado pelo MongoDB com código 121. Assim se distingue uma rejeição do SGBD de uma rejeição apenas na interface.
-
-**Limitação ou risco residual.** Esquema não verifica veracidade, autorização de tenant nem finalidade de uso dos dados. Migrações e evolução do contrato precisam de revisão e teste de compatibilidade.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+Embora o MongoDB permita documentos flexíveis, isso não significa que qualquer informação deva ser aceita. O JSON Schema ajuda a definir quais campos são obrigatórios, quais tipos de dados são permitidos e quais regras os documentos precisam seguir. Por exemplo, um pedido pode exigir um identificador, um valor numérico e um status válido. Isso melhora a qualidade e a integridade dos dados, além de reduzir a entrada de informações inesperadas que poderiam provocar erros na aplicação. No laboratório, a evidência é tentar inserir um documento inválido e verificar que o banco o rejeita. Essa validação complementa, mas não substitui, os controles de acesso e a validação da aplicação.
 
 ## 9. Descreva como bindIp, firewall e TLS se complementam para proteger o MongoDB. Explique por que criptografia em trânsito não substitui controle de rede.
 
-**Conceito.** bindIp seleciona interfaces de escuta; firewall/segmentação limitam origens; TLS protege confidencialidade/integridade do canal e verifica o endpoint.
-
-**Risco.** Um endpoint público com TLS ainda aceita tentativas de autenticação de origens indesejadas. Criptografar tráfego não reduz por si só a superfície de rede.
-
-**Configuração implementada.** Dentro do Compose, MongoDB escuta em 0.0.0.0 para atender API/ops na rede interna; não publica porta e exige TLS. O perfil nativo escuta exclusivamente em 127.0.0.1. PyMongo verifica CA/hostname, sem flags para aceitar certificado inválido.
-
-**Evidência observável.** `test_mongo_network` observa getCmdLineOpts do servidor. `test_mongo_tls` aceita canal verificado e recusa plaintext, CA não confiável e hostname errado. ENV-01 é necessário para comprovar a ausência de publicação no Compose; não foi executado com o motor Docker indisponível.
-
-**Limitação ou risco residual.** A configuração declarada de rede deve ser confrontada com o ambiente efetivo. O teste nativo de loopback não certifica firewall externo, roteadores ou regras de produção.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+O bindIp define em quais interfaces de rede o MongoDB aceita conexões. O firewall restringe quais máquinas podem alcançar o serviço. Já o TLS criptografa os dados transmitidos entre a aplicação e o banco. Esses controles se complementam porque protegem partes diferentes da conexão. Mesmo com TLS, deixar a porta do MongoDB acessível para qualquer origem continua aumentando o risco de tentativas de acesso indevido. Ou seja, criptografar a comunicação não significa autorizar todas as conexões. Para demonstrar a proteção, podemos mostrar a configuração do bindIp, as regras de rede e uma conexão usando TLS.
 
 ## 10. Após concluir o laboratório NoSQL, identifique três riscos que ainda podem permanecer mesmo com autenticação, TLS, RBAC e backup configurados. Proponha controles adicionais.
 
-**Conceito.** Risco residual é a exposição que persiste depois dos controles, considerando seu alcance, o processo operacional e ameaças ainda plausíveis.
-
-**Risco.** Três riscos permanecem: credencial/host comprometido; cópia e chave perdidas no mesmo domínio de falha; dependência ou configuração vulnerável após a entrega.
-
-**Configuração implementada.** O laboratório usa conta limitada, TLS, validação e dump cifrado/restauração isolada. As medidas adicionais propostas são, respectivamente: MFA/PAM e rotação/cofre; offsite/imutabilidade e agenda/PITR apropriado; patching, SCA contínua, revisão de migrations e alertas.
-
-**Evidência observável.** A tabela versionada em docs/riscos_residuais.md liga risco, impacto, controle e próxima medida. NOSQL-09 registra restore e igualdade de dados; as auditorias de dependências têm relatórios próprios com a data. Propostas não são registradas como controles existentes.
-
-**Limitação ou risco residual.** A execução em standalone exige cuidado com consistência durante escritas. Não há evidência de HA, disaster recovery completo ou cumprimento de RTO/RPO de negócio; esses pontos não podem receber pontuação fictícia nos simuladores.
-
-**Revisão individual do aluno:** pendente. Nome/RA e ajustes: ____________________.
+Mesmo com esses recursos, ainda existem riscos. O primeiro é o roubo de credenciais: alguém pode conseguir uma senha válida; para reduzir isso, devemos proteger e trocar os segredos, além de limitar os privilégios. O segundo é uma falha na aplicação, como NoSQL Injection, que pode permitir consultas indevidas; para evitá-la, precisamos validar as entradas e montar os filtros com segurança. O terceiro é descobrir que o backup está corrompido ou não restaura os dados quando necessário; por isso, devemos testar o restore periodicamente e manter cópias protegidas. Esses exemplos mostram o risco residual: a segurança reduz a chance e o impacto dos problemas, mas não elimina todos eles.
 
 ## 11. Conclusão
 
-A execução observou 39 cenários, com 39 aprovações. Os resultados sustentam as afirmações delimitadas sobre autenticação, autorização, TLS, integridade e recuperação no perfil testado. Persistem a validação de implantação em contêineres, a coleta humana de simuladores e a revisão individual das respostas. O laboratório não certifica robustez universal ou prontidão para produção.
+A execução observou 29 cenários, com 29 aprovações. Os resultados sustentam as afirmações delimitadas sobre autenticação, autorização, TLS, integridade e recuperação no perfil testado. Os controles sem comprovação continuam pendentes. Os simuladores registram o cenário atual, uma hipótese de continuidade e o plano de evolução. O cenário inicial ficou não coletado. O grupo deve revisar as respostas e validar as metas e os responsáveis propostos no plano. O laboratório não certifica robustez universal ou prontidão para produção.
 
 ## 12. Bibliografia e materiais
 
