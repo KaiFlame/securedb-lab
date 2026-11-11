@@ -1,4 +1,4 @@
-FROM python:3.12.12-slim-bookworm
+FROM mirror.gcr.io/python:3.12.12-slim-bookworm
 ARG TARGETARCH
 RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-certificates fonts-dejavu-core && \
  install -d /usr/share/postgresql-common/pgdg && \

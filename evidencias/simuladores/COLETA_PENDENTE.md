@@ -1,3 +1,3 @@
-# Coleta humana pendente
+# Registro do cenário inicial
 
-Não foram preenchidas notas ou capturas dos quatro simuladores. Utilize `docs/simuladores.md` e o HTML FACAMP original. Registre somente dados efetivamente informados/medidos e diferencie cenário observado de proposta. Se não houve captura anterior, escreva “não coletado”; não reconstrua uma imagem retroativa.
+O cenário anterior aos laboratórios ficou não coletado. A execução de 11/11/2026 registrou as telas atuais de governança e IAM, uma simulação hipotética de BCM e o plano de evolução. Consulte o JSON de parâmetros e resultados e as justificativas em `docs/simuladores.md`.

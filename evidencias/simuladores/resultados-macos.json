@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-11",
+  "baseline": "não coletado",
+  "results": [
+    {
+      "name": "01-governanca-atual",
+      "score": "31",
+      "classification": "Nível 2 · Repetível",
+      "inputs": {
+        "s_iam": 2,
+        "s_mfa": 0,
+        "s_crypto": 2,
+        "s_network": 2,
+        "s_hardening": 1,
+        "s_logging": 2,
+        "s_bcm": 2,
+        "s_devsecops": 1,
+        "s_privacy": 2,
+        "s_risk": 1
+      },
+      "recommendations": [
+        "P1 · MFA/PAM: Aplicar MFA para administração e adotar PAM/JIT para contas privilegiadas.",
+        "P2 · Hardening: Estabelecer baseline, patch SLA e revisão periódica de configuração.",
+        "P3 · DevSecOps: Adicionar secret scan, SAST/SCA, IaC scan e revisão de migrations.",
+        "P4 · Risco/Compliance: Manter registro de riscos, responsáveis, evidências e recertificação de controles."
+      ]
+    },
+    {
+      "name": "02-iam-atual",
+      "score": "60",
+      "classification": "Controlada",
+      "inputs": {
+        "iam_env": "onprem",
+        "iam_db": "hybrid",
+        "iam_priv": 3,
+        "iam_auth": 1,
+        "iam_public": false,
+        "iam_secret": true,
+        "iam_review": false,
+        "iam_audit": true,
+        "iam_workload": false,
+        "iam_breakglass": false
+      },
+      "recommendations": [
+        "1. Ativar MFA para administração; para maior maturidade, adicionar PAM/JIT.",
+        "2. Remover credenciais do código e usar cofre/identidade de workload.",
+        "3. Implantar recertificação periódica e processo Joiner-Mover-Leaver."
+      ]
+    },
+    {
+      "name": "03-bcm-cenario-hipotetico",
+      "score": "36",
+      "classification": "Insuficiente",
+      "inputs": {
+        "bcm_rto": 1,
+        "bcm_rpo": 8,
+        "bcm_freq": 24,
+        "bcm_restore": 0.5,
+        "bcm_ha": false,
+        "bcm_offsite": false,
+        "bcm_immutable": false,
+        "bcm_encrypt": true,
+        "bcm_test": false,
+        "bcm_dr": false
+      },
+      "recommendations": [
+        "1. Aumentar frequência de backup ou adotar PITR/replicação para atender ao RPO.",
+        "2. Criar cópia offsite para separar domínio de falha.",
+        "3. Adicionar cópia imutável/offline contra ransomware.",
+        "4. Executar restore test periódico; backup sem teste não comprova recuperação.",
+        "5. Documentar plano de DR, responsáveis, critérios de acionamento e comunicação."
+      ]
+    },
+    {
+      "name": "04-plano-de-evolucao",
+      "score": "1",
+      "classification": "Baixo",
+      "inputs": {
+        "plan_current": 2,
+        "plan_target": 3,
+        "plan_focus": "risk",
+        "plan_env": "onprem"
+      },
+      "recommendations": [
+        "Revisar VLAN/firewall, bastion/PAM, hardening de SO e proteção física.\nP1",
+        "Atualizar threat model e registro de riscos com risco residual.\nP1",
+        "Implantar políticas, padrões e matriz de responsabilidades\nP2",
+        "Estabelecer recertificação de acessos e patch SLA\nP2",
+        "Centralizar logging e criar testes periódicos de restore\nP2"
+      ]
+    }
+  ]
+}

@@ -14,9 +14,9 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** ENV-01 recusa banco com porta publicada, contêiner parado ou rede de dados não interna.
 
-**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_sql_environment`, `ENV-01`.
+**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_environment`, `ENV-01`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Host Docker e volume continuam no mesmo domínio de falha.
 
@@ -34,7 +34,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_roles`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Administrador e operador de migrations mantêm poder elevado.
 
@@ -52,7 +52,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_privileges`, `test_api_viewer_and_csrf`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** A conta de negócio acessa ambos os tenants sob contexto confiável.
 
@@ -70,7 +70,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_authentication`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** SCRAM não substitui proteção do segredo e do host.
 
@@ -88,7 +88,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_tls`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** CA didática local; não certifica identidade pública.
 
@@ -106,7 +106,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_rls_direct`, `test_api_tenant_access`, `test_api_write_scope`, `test_sql_context_reset`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** GUC de tenant é confiada ao backend; injeção arbitrária ou API comprometida pode alterá-la.
 
@@ -122,9 +122,9 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** String com aspas/OR é tratada como dado; mass assignment e tipos inválidos são rejeitados.
 
-**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_injection`, `test_api_validation`.
+**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_sql_injection`, `test_api_validation`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Parametrização não decide autorização ou regras de negócio.
 
@@ -142,7 +142,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_audit`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Admin pode alterar logs; não há SIEM nem trilha imutável.
 
@@ -160,7 +160,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_backup`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Sem agenda, offsite, HA ou PITR; chave guardada no mesmo host.
 
@@ -176,9 +176,9 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** Falha ou ausência de cenário obrigatório impede aprovação; ENV-01 continua exigido no ambiente.
 
-**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_sql_final`.
+**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_sql_final`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Testes limitados aos cenários e versões registrados.
 
@@ -194,9 +194,9 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** Inspeção recusa publicação de porta ou rede interna ausente; não se presume Docker pelo teste nativo.
 
-**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_mongo_environment`, `ENV-01`.
+**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_environment`, `ENV-01`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Host e volume único permanecem pontos de falha.
 
@@ -214,7 +214,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_admin_separation`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Root é necessário para bootstrap e restauração didática.
 
@@ -232,7 +232,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_anonymous`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Ping pode ser anônimo; operação de dados deve ser negada.
 
@@ -250,7 +250,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_rbac`, `test_api_viewer_and_csrf`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Isolamento por empresa é da API; MongoDB não implementa RLS aqui.
 
@@ -266,9 +266,9 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** Banco publicado ou rede não interna reprova ENV-01; 0.0.0.0 isoladamente não comprova proteção.
 
-**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_mongo_network`, `ENV-01`.
+**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_network`, `ENV-01`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** 0.0.0.0 no contêiner depende de rede isolada e ausência de publicação.
 
@@ -286,7 +286,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_tls`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** TLS do banco não protege navegador HTTP local.
 
@@ -304,7 +304,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_schema`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Validação sintática não comprova veracidade dos dados.
 
@@ -320,9 +320,9 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** q[$ne], $where, objetos e parâmetros extras são recusados; .* não amplia resultados.
 
-**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_injection`, `test_profile_search`.
+**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_mongo_injection`, `test_profile_search`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Filtros internos ainda precisam de revisão de autorização.
 
@@ -340,7 +340,7 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_backup`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Standalone não oferece snapshot consistente multi-documento; pausar escritas.
 
@@ -356,8 +356,8 @@ Implementação e comprovação são independentes. Cada aprovação exige todos
 
 **Teste negativo:** Cenário obrigatório ausente/falho impede aprovação; não se declara auditoria Enterprise.
 
-**Comprovação:** IMPLEMENTADO E TESTADO; cenários `test_mongo_final`.
+**Comprovação:** IMPLEMENTADO SEM VALIDAÇÃO; cenários `test_mongo_final`.
 
-**Evidência:** `evidencias/entrega/resultado_integrado.json` e arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
+**Evidência:** `evidencias/latest.json` e `evidencias/environment.json` (quando existente), além dos arquivos por teste em `evidencias/sql` / `evidencias/nosql` na instância que os executou.
 
 **Risco residual:** Community sem auditoria Enterprise; suíte não é auditoria formal.

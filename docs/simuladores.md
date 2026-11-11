@@ -1,23 +1,41 @@
-# Roteiro dos quatro simuladores de governança
+# Simuladores de governança
 
-Use os simuladores existentes no HTML original. Os valores são **informados pelo aluno**, mesmo quando derivados de medições. Não constituem teste automatizado nem auditoria formal. Nenhum cenário inicial foi coletado nesta execução; a comparação antes/depois permanece pendente de coleta humana, sem reconstrução fictícia do passado.
+Fonte: apresentação FACAMP, slides 67–70, e Manual do Aluno, pp. 5–8. Os simuladores foram executados no HTML original em 11/11/2026. A versão acadêmica inclui as capturas. O cenário inicial dos simuladores 1 a 3 ficou **não coletado**. Os resultados abaixo registram o cenário atual e, no simulador 3, uma hipótese de planejamento. Os valores e as recomendações calculadas estão em `evidencias/simuladores/resultados-macos.json`.
 
-## 1. Governança de SI
+## 1. Governança de SI — 31/100, nível 2 (Repetível)
 
-Registre os dez domínios, nota 0-5, peso, justificativa e caminho de evidência: IAM 12; MFA/PAM 10; criptografia 11; rede 10; hardening 9; logging 10; BCM 12; DevSecOps 9; privacidade 8; risco/compliance 9. O índice didático é a soma ponderada das notas dividida por 5 (pesos somam 100). Registre nível e quatro lacunas destacadas. Não conceda nota máxima por haver um arquivo de configuração.
+| Domínio | Nota / 5 | Justificativa |
+|---|---|---|
+| IAM | 2 | Papéis segregados e operações permitidas e negadas verificadas nos dois bancos. |
+| MFA/PAM | 0 | Administração por senha, sem MFA/PAM demonstrados. |
+| Criptografia | 2 | TLS verificado nos bancos e restauração a partir de backups cifrados. |
+| Rede | 2 | ENV-01 observou a rede interna do Compose e os bancos sem portas publicadas. |
+| Hardening | 1 | Configurações de segurança registradas. Falta rotina de revisão e atualização. |
+| Logging/SIEM | 2 | Eventos de conexão e DDL observados no PostgreSQL e trilha da aplicação. Falta centralização e alerta. |
+| BCM/DR | 2 | Restaurações verificadas em bases separadas. Backups sob demanda no mesmo host. |
+| DevSecOps | 1 | Testes locais repetíveis. Evidência limitada de automação contínua. |
+| Privacidade/LGPD | 2 | Dados sintéticos e separação por empresa. Governança de retenção e conformidade ainda por definir. |
+| Risco/compliance | 1 | Riscos residuais documentados. Falta rotina de revisão e definição de responsáveis. |
 
-## 2. IAM e exposição
+O HTML destacou MFA/PAM, hardening, DevSecOps e gestão de riscos.
 
-Anote ambiente, banco, privilégio, autenticação administrativa, endpoint público, segredo versionado, recertificação, logs, identidade de workload e break-glass. Compare somente alterações comprovadas e cite controles SQL-02/03/04 e NOSQL-02/03/04/05. Uma senha estática de serviço não é identidade de workload federada. Não marque MFA/PAM ou recertificação sem processo real.
+## 2. IAM e exposição — 60/100, postura Controlada
 
-## 3. BCM / RTO / RPO
+Ambiente local (on-premises), SQL + NoSQL, mínimo privilégio e segregação, senha administrativa forte, endpoint público desmarcado e auditoria marcada pelos logs locais. O item de senha em código/.env real foi marcado porque a instalação gera um .env local com credenciais. O arquivo é ignorado pelo Git. Recertificação, identidade federada de workload e acesso de emergência controlado ficaram desmarcados. Evidências: ENV-01, SQL-02/03/04/08 e NOSQL-02/03/04/05.
 
-Defina requisitos do cenário fictício com justificativa do aluno, sem apresentá-los como requisito do professor. Copie `backup_seconds` e `restore_seconds` dos testes SQL-09/NOSQL-09, considerando que o tempo de recuperação do serviço completo inclui mais que o restore do banco. Frequência de backup não foi automatizada; logo, não há RPO operacional garantido. HA, offsite, imutabilidade e plano de DR completo permanecem ausentes. Cópia AES-GCM no mesmo host não atende sozinha 3-2-1-1-0.
+## 3. BCM — cenário hipotético, 36/100, Insuficiente
 
-## 4. Plano de evolução
+As restaurações foram medidas com dados pequenos. PostgreSQL: dump de 0,1082 s, restauração e verificação de 0,1472 s. MongoDB: dump de 0,0298 s, restauração e verificação de 0,1116 s. Os destinos separados foram verificados nos testes SQL-09 e NOSQL-09. Esses tempos medem a recuperação dos bancos com os dados do teste.
 
-Registre nível atual/alvo, gap, prioridade e ambiente. Propostas P1: (a) backups agendados/offsite/imutáveis e chave em cofre; (b) identidade administrativa com MFA/PAM e revisão de acesso; (c) centralização de logs, retenção e alertas. Responsáveis: preencher pelo grupo. Evidências esperadas: execução e logs de restore, revisão assinada de acesso e alerta observado. São propostas, não controles existentes.
+O simulador exige uma frequência. Como os backups reais são manuais, o campo foi preenchido com uma **hipótese** diária para mostrar a lacuna em relação a um RPO proposto de 8 horas. O exercício usa RTO proposto de 1 hora e estimativa de 30 minutos para recuperar o serviço, incluindo atividades além do restore. Os valores representam um cenário didático para discussão. A única opção marcada foi backup criptografado. A restauração observada foi pontual e a opção de teste periódico ficou desmarcada. Na operação atual, a frequência manual deixa o RPO sem garantia.
 
-## Coleta
+## 4. Plano de evolução — nível 2 para 3
 
-Salve em `evidencias/simuladores/` os quatro pares de capturas quando houver cenário inicial verdadeiro, justificativas em Markdown e um JSON com `origem: informado pelo aluno`, data, parâmetros, resultado, evidência e limitações. Se não houver captura inicial, registre “não coletado”; não simule uma captura retroativa. Revise limitações da fórmula do HTML antes de interpretar mudanças de pontuação como ganho real de segurança.
+O HTML calculou lacuna de 1 nível e esforço baixo para o foco de redução de risco em ambiente local. A tabela transforma as recomendações do simulador em ações do grupo, com responsáveis propostos por função. A revisão periódica fica em P3 como etapa de acompanhamento definida para a entrega.
+
+| Prioridade | Ação proposta | Responsável proposto | Evidência esperada |
+|---|---|---|---|
+| P1 | Revisar acesso administrativo, avaliar MFA/PAM e atualizar o registro de riscos. | Segurança e infraestrutura | Matriz de acesso revisada e registro de riscos com responsáveis. |
+| P2 | Definir periodicidade e retenção de backups, separar a cópia e testar a restauração. | Administração dos bancos | Agenda, registro de restauração e comparação dos dados. |
+| P2 | Centralizar logs e formalizar a revisão de privilégios e de atualizações. | Operação e segurança | Evento recebido no destino e registro da revisão. |
+| P3 | Revisar as ações após novo exercício e atualizar a pontuação com as evidências obtidas. | Grupo | Comparação datada e inventário de controles atualizado. |

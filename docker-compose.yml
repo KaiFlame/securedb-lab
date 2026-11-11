@@ -1,14 +1,14 @@
 name: securedb-lab
 services:
   audit-init:
-    image: python:3.12.12-slim-bookworm
+    image: mirror.gcr.io/python:3.12.12-slim-bookworm
     network_mode: none
     read_only: true
     security_opt: [no-new-privileges:true]
     volumes: ["auditdata:/audit"]
     command: ["python", "-c", "import os; os.makedirs('/audit',exist_ok=True); open('/audit/events.jsonl','a').close(); os.chown('/audit',10001,10001); os.chown('/audit/events.jsonl',10001,10001); os.chmod('/audit',0o700); os.chmod('/audit/events.jsonl',0o600)"]
   postgres:
-    image: postgres:17.6-bookworm
+    image: public.ecr.aws/docker/library/postgres:17.6-bookworm
     entrypoint: ["/bin/sh", "/lab-scripts/pg-entrypoint.sh"]
     environment:
       POSTGRES_DB: securedb
@@ -32,7 +32,7 @@ services:
       retries: 30
     security_opt: [no-new-privileges:true]
   mongo:
-    image: mongo:8.0.15
+    image: public.ecr.aws/docker/library/mongo:8.0.15
     entrypoint: ["/bin/bash", "/lab-scripts/mongo-entrypoint.sh"]
     environment:
       MONGO_ADMIN_PASSWORD: ${MONGO_ADMIN_PASSWORD:?Run setup first}

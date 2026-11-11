@@ -1,12 +1,10 @@
-# Roteiro de demonstração e capturas
+# Roteiro de apresentação
 
-1. Apresente problema, dados sintéticos e diagrama. Explique diferenças entre controles implementados, comprovados e pendentes; identifique o perfil de execução real do relatório.
-2. Entre como aurora.editor. Mostre os pedidos da Aurora e crie um pedido. Abra os detalhes e aprove o rascunho. Mostre a transição inválida no teste automatizado.
-3. Saia e entre como vertice.editor. Mostre os dados distintos. Use SQL-06 para demonstrar SELECT/INSERT/UPDATE entre empresas bloqueados diretamente no banco e na API. Volte como aurora.leitor e mostre escrita negada.
-4. Abra catálogo e perfis. Faça cadastro/edição com dados example.test. Mostre NOSQL-07: escrita inválida enviada diretamente por PyMongo recebeu código 121 do MongoDB.
-5. Abra SQL-05/NOSQL-06 e apresente sessão TLS e negativas de certificado/canal inseguro. Explique por que TLS não substitui rede ou RBAC.
-6. Execute `python scripts/lab.py test` na CLI com Compose funcional e atualize o painel. Mostre que não há botão de aprovação manual.
-7. Apresente SQL-09/NOSQL-09: destino separado, contagens/fingerprints iguais, cópia cifrada e tempos medidos. O tempo do teste não equivale ao RTO de uma organização.
-8. Explique limitações, questões dissertativas e pendências de coleta dos simuladores. Encerre com riscos residuais e controles adicionais propostos.
+1. **Vou mostrar o cenário.** Começo pelo diagrama. Explico que usamos dados fictícios, que o painel roda no meu computador e que os bancos ficam em uma rede interna do Docker. Mostro o ENV-01 para comprovar a configuração.
+2. **Vou demonstrar o PostgreSQL.** Abro os pedidos com a conta da Aurora e depois com a da Vértice. Comparo as duas listas e mostro o teste em que um pedido aparece para a Vértice, mas fica fora do acesso da Aurora. Explico como o próprio banco aplica a política por linha.
+3. **Vou demonstrar o MongoDB.** Abro o catálogo e os perfis. Uso um exemplo de documento para mostrar que o MongoDB aceita os campos válidos e rejeita uma gravação fora do esquema. Em seguida, mostro que a conta da aplicação tem acesso às coleções necessárias e recebe uma negativa ao tentar administrar usuários.
+4. **Vou mostrar a conexão e a recuperação.** Aponto as evidências de TLS nos dois bancos e um evento de auditoria no PostgreSQL. Depois mostro que restauramos cada backup em uma base separada e conferimos os dados recuperados. Explico que o tempo medido cobre a restauração dos dados do teste.
+5. **Vou apresentar os simuladores.** Explico o que sustentou as notas de governança e IAM. Digo que o cenário anterior ficou sem registro e que os valores de continuidade foram usados como hipótese didática. Mostro o plano de evolução e as ações prioritárias.
+6. **Vou encerrar com os resultados e as questões.** Mostro quais controles foram comprovados neste Mac, quais têm evidência de uma execução anterior e quais ainda precisam de verificação local. Uso as respostas dissertativas para ligar os conceitos aos exemplos que acabei de demonstrar.
 
-Capturas a produzir pelo aluno no ambiente final: contêineres ativos e rede; duas identidades/empresas; bloqueio de acesso; sessão TLS; rejeição de schema; evidência de restore; quatro simuladores antes/depois quando houver coleta inicial. Capturas produzidas nesta entrega são apenas as que constam no manifesto de validação visual; nenhuma imagem representa teste não executado.
+Para me localizar durante a apresentação, consulto as capturas e os resultados em `evidencias/entrega/macos_local/` e os simuladores em `evidencias/simuladores/`. As senhas das contas fictícias ficam no arquivo local `.local/ACESSO_LOCAL.txt`.
