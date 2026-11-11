@@ -24,7 +24,7 @@ jobs:
       - name: Windows PowerShell 5.1 launcher checks (mocked Docker)
         shell: powershell
         run: .\tests\windows_cli.ps1 -OutputPath evidencias/windows_cli.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-launcher-source-checks
           path: evidencias/windows_cli.json
